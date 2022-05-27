@@ -1,28 +1,50 @@
-'From Cuis 6.0 [latest update: #5202] on 27 May 2022 at 2:45:18 pm'!
-'Description day11'!
-!provides: 'AdventOfCode' 1 15!
-SystemOrganization addCategory: 'AdventOfCode-Day11-Test'!
-SystemOrganization addCategory: 'AdventOfCode-Day11'!
+'From Cuis 6.0 [latest update: #5202] on 27 May 2022 at 11:26:00 pm'!
+'Description '!
+!provides: 'AdventOfCode2016' 1 0!
+SystemOrganization addCategory: 'AdventOfCode2016-Day11-Test'!
+SystemOrganization addCategory: 'AdventOfCode2016-Day11'!
+SystemOrganization addCategory: 'AdventOfCode2016-Day12'!
+SystemOrganization addCategory: 'AdventOfCode2016'!
 
 
-!classDefinition: #Day11StateTest category: 'AdventOfCode-Day11-Test'!
+!classDefinition: #Day11StateTest category: 'AdventOfCode2016-Day11-Test'!
 TestCase subclass: #Day11StateTest
 	instanceVariableNames: 'aStart aGoal example'
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'AdventOfCode-Day11-Test'!
-!classDefinition: 'Day11StateTest class' category: 'AdventOfCode-Day11-Test'!
+	category: 'AdventOfCode2016-Day11-Test'!
+!classDefinition: 'Day11StateTest class' category: 'AdventOfCode2016-Day11-Test'!
 Day11StateTest class
 	instanceVariableNames: ''!
 
-!classDefinition: #Day11State category: 'AdventOfCode-Day11'!
+!classDefinition: #Day12Test category: 'AdventOfCode2016-Day12'!
+TestCase subclass: #Day12Test
+	instanceVariableNames: 'myComputer'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'AdventOfCode2016-Day12'!
+!classDefinition: 'Day12Test class' category: 'AdventOfCode2016-Day12'!
+Day12Test class
+	instanceVariableNames: ''!
+
+!classDefinition: #Day11State category: 'AdventOfCode2016-Day11'!
 Object subclass: #Day11State
 	instanceVariableNames: 'code cost estimatedCost'
 	classVariableNames: 'Goal Kinds NumberOfObjects Width'
 	poolDictionaries: ''
-	category: 'AdventOfCode-Day11'!
-!classDefinition: 'Day11State class' category: 'AdventOfCode-Day11'!
+	category: 'AdventOfCode2016-Day11'!
+!classDefinition: 'Day11State class' category: 'AdventOfCode2016-Day11'!
 Day11State class
+	instanceVariableNames: ''!
+
+!classDefinition: #Day12 category: 'AdventOfCode2016-Day12'!
+Object subclass: #Day12
+	instanceVariableNames: 'register code pc'
+	classVariableNames: 'Input'
+	poolDictionaries: ''
+	category: 'AdventOfCode2016-Day12'!
+!classDefinition: 'Day12 class' category: 'AdventOfCode2016-Day12'!
+Day12 class
 	instanceVariableNames: ''!
 
 
@@ -158,6 +180,35 @@ self assert: states isEmpty equals: false.! !
 aStart
 	Day11State setKinds: 2.	
 	^Day11State new.! !
+
+!Day12Test methodsFor: 'testing' stamp: 'shnarazk 5/27/2022 22:36:17'!
+demoStart
+ myComputer _ Day12 new.
+myComputer load: self example .
+myComputer start.! !
+
+!Day12Test methodsFor: 'testing' stamp: 'shnarazk 5/27/2022 22:34:32'!
+setUp
+	myComputer _ Day12 new.
+	myComputer load: self  example.! !
+
+!Day12Test methodsFor: 'accessing' stamp: 'shnarazk 5/27/2022 22:33:24'!
+example
+	^ {
+		{#cpy. 41. #a}. 
+		{#inc. #a}. 
+		{#inc. #a}. 
+		{#dec. #a}. 
+		{#jnz. #a. 2}. 
+		{#dec. #a}
+	}.! !
+
+!Day12Test class methodsFor: 'associating' stamp: 'shnarazk 5/27/2022 22:37:19'!
+demoStart
+| myComputer |
+	myComputer _ Day12 new.
+	myComputer load: self example.
+	myComputer start.! !
 
 !Day11State methodsFor: 'accessing' stamp: 'shnarazk 5/27/2022 12:09:33'!
 code
@@ -416,3 +467,144 @@ part2
 	start _ Day11State represents:
 		{0. 0. 0. 0. 1. 2. 1. 1. 1. 1. 0. 0. 0. 0. }.
 	Transcript show: start costToGoal.! !
+
+!Day12 methodsFor: 'evaluating' stamp: 'shnarazk 5/27/2022 23:20:17'!
+execute: anInstruction
+	| opCode |
+	opCode _ anInstruction at: 1.
+	"Transcript show: opCode."
+	opCode = #cpy ifTrue: [ | from to val |
+		from _ anInstruction at: 2.
+		to _ anInstruction at: 3.
+		val _ from isNumber
+			ifTrue: [ from ]
+			ifFalse: [ register at: from ].
+		register
+			at: to
+			put: val.
+		pc _ pc + 1.
+		^ self ].
+	opCode = #inc ifTrue: [ | name val |
+		name _ anInstruction at: 2.
+		val _ register at: name.
+		register
+			at: name
+			put: val + 1.
+		pc _ pc + 1.
+		^ self ].
+	opCode = #dec ifTrue: [ | name val |
+		name _ anInstruction at: 2.
+		val _ register at: name.
+		register
+			at: name
+			put: val - 1.
+		pc _ pc + 1.
+		^ self ].
+	opCode = #jnz ifTrue: [ | op1 cond op2 offset |
+		op1 _ anInstruction at: 2.
+		cond _ op1 isNumber
+			ifTrue: [ op1 ]
+			ifFalse: [ register at: op1 ].
+		op2 _ anInstruction at: 3.
+		offset _ op2 isNumber
+			ifTrue: [ op2 ]
+			ifFalse: [ register at: op2 ].
+		pc _ pc +
+			(cond = 0
+				ifTrue: [ 1 ]
+				ifFalse: [ offset ]).
+		^ self ].! !
+
+!Day12 methodsFor: 'evaluating' stamp: 'shnarazk 5/27/2022 23:02:07'!
+start
+	| end |
+	pc _ 1.
+	end _ code size.
+	[ end < pc ] whileFalse: [ | instruction oldPc |
+		oldPc _ pc.
+		instruction _ code at: pc.
+		"Transcript show: instruction asString."
+		self execute: instruction.
+		oldPc = pc ifTrue: [ self error: 'Not updated PC' ]].
+	Transcript show: (register at: #a).! !
+
+!Day12 methodsFor: 'initialization' stamp: 'shnarazk 5/27/2022 22:41:19'!
+initialize
+pc _ 1.
+register _ Dictionary new.
+register at: #a put: 0; at: #b put: 0; at: #c put: 0; at: #d put: 0.! !
+
+!Day12 methodsFor: 'initialization' stamp: 'shnarazk 5/27/2022 22:18:30'!
+load: aProgram
+	code _ aProgram.
+	pc _ 1.! !
+
+!Day12 methodsFor: 'as yet unclassified' stamp: 'shnarazk 5/27/2022 23:22:55'!
+at: reg put: val
+register at: reg put: val! !
+
+!Day12 class methodsFor: 'initialization' stamp: 'shnarazk 5/27/2022 23:18:53'!
+part1
+	| code myComputer |
+	code _ {
+	{#cpy . 1 . #a} .
+      {#cpy . 1 . #b} .
+      {#cpy . 26 . #d} .
+      {#jnz . #c . 2} .
+      {#jnz . 1 . 5} .
+      {#cpy . 7 . #c} .
+      {#inc . #d}. 
+      {#dec . #c}.  
+      {#jnz . #c . -2} .
+     {#cpy . #a . #c} .
+    {#inc . #a}.  
+     {#dec . #b}.  
+    {#jnz . #b . -2} .
+     {#cpy . #c . #b} .
+     {#dec . #d}.  
+    {#jnz . #d . -6} .
+     {#cpy . 16 . #c} .
+     {#cpy . 12 . #d} .
+     {#inc . #a}.  
+    {#dec . #d}.  
+  {#jnz . #d . -2} .
+     {#dec . #c}.  
+  {#jnz . #c . -5} 
+	
+	}.
+	myComputer _ self new.
+	myComputer load: code.
+	myComputer start.! !
+
+!Day12 class methodsFor: 'initialization' stamp: 'shnarazk 5/27/2022 23:23:22'!
+part2
+	| code myComputer |
+	code _ {
+		{#cpy. 1. #a}. 
+		{#cpy. 1. #b}. 
+		{#cpy. 26. #d}. 
+		{#jnz. #c. 2}. 
+		{#jnz. 1. 5}. 
+		{#cpy. 7. #c}. 
+		{#inc. #d}. 
+		{#dec. #c}. 
+		{#jnz. #c. -2}. 
+		{#cpy. #a. #c}. 
+		{#inc. #a}. 
+		{#dec. #b}. 
+		{#jnz. #b. -2}. 
+		{#cpy. #c. #b}. 
+		{#dec. #d}. 
+		{#jnz. #d. -6}. 
+		{#cpy. 16. #c}. 
+		{#cpy. 12. #d}. 
+		{#inc. #a}. 
+		{#dec. #d}. 
+		{#jnz. #d. -2}. 
+		{#dec. #c}. 
+		{#jnz. #c. -5}
+	}.
+	myComputer _ self new.
+	myComputer load: code.
+	myComputer at: #c put: 1.
+	myComputer start.! !

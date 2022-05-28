@@ -1,20 +1,20 @@
-'From Cuis 6.0 [latest update: #5202] on 27 May 2022 at 11:26:00 pm'!
+'From Cuis 6.0 [latest update: #5202] on 28 May 2022 at 11:40:21 pm'!
 'Description '!
-!provides: 'AdventOfCode2016' 1 0!
-SystemOrganization addCategory: 'AdventOfCode2016-Day11-Test'!
+!provides: 'AdventOfCode2016' 1 8!
 SystemOrganization addCategory: 'AdventOfCode2016-Day11'!
 SystemOrganization addCategory: 'AdventOfCode2016-Day12'!
+SystemOrganization addCategory: 'AdventOfCode2016-Day13'!
 SystemOrganization addCategory: 'AdventOfCode2016'!
 
 
-!classDefinition: #Day11StateTest category: 'AdventOfCode2016-Day11-Test'!
-TestCase subclass: #Day11StateTest
-	instanceVariableNames: 'aStart aGoal example'
-	classVariableNames: ''
+!classDefinition: #Day11State category: 'AdventOfCode2016-Day11'!
+TestCase subclass: #Day11State
+	instanceVariableNames: 'code currentCost estimatedCost aStart aGoal example'
+	classVariableNames: 'Goal Kinds NumberOfObjects Width'
 	poolDictionaries: ''
-	category: 'AdventOfCode2016-Day11-Test'!
-!classDefinition: 'Day11StateTest class' category: 'AdventOfCode2016-Day11-Test'!
-Day11StateTest class
+	category: 'AdventOfCode2016-Day11'!
+!classDefinition: 'Day11State class' category: 'AdventOfCode2016-Day11'!
+Day11State class
 	instanceVariableNames: ''!
 
 !classDefinition: #Day12Test category: 'AdventOfCode2016-Day12'!
@@ -27,14 +27,14 @@ TestCase subclass: #Day12Test
 Day12Test class
 	instanceVariableNames: ''!
 
-!classDefinition: #Day11State category: 'AdventOfCode2016-Day11'!
-Object subclass: #Day11State
-	instanceVariableNames: 'code cost estimatedCost'
-	classVariableNames: 'Goal Kinds NumberOfObjects Width'
+!classDefinition: #Day13 category: 'AdventOfCode2016-Day13'!
+TestCase subclass: #Day13
+	instanceVariableNames: 'cost goal toEvaluate favorite'
+	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'AdventOfCode2016-Day11'!
-!classDefinition: 'Day11State class' category: 'AdventOfCode2016-Day11'!
-Day11State class
+	category: 'AdventOfCode2016-Day13'!
+!classDefinition: 'Day13 class' category: 'AdventOfCode2016-Day13'!
+Day13 class
 	instanceVariableNames: ''!
 
 !classDefinition: #Day12 category: 'AdventOfCode2016-Day12'!
@@ -48,180 +48,21 @@ Day12 class
 	instanceVariableNames: ''!
 
 
-!Day11State commentStamp: '<historical>' prior: 0!
-Compressed state description!
-
-!Day11StateTest methodsFor: 'testing' stamp: 'shnarazk 5/27/2022 11:49:56'!
-setUp
-	Day11State setKinds: 2.
-	aStart _ Day11State new.
-	aGoal _ Day11State new initializeAs: 1023.
-	example _ Day11State represents:
-		{1. 0. 2. 0}.! !
-
-!Day11StateTest methodsFor: 'testing' stamp: 'shnarazk 5/27/2022 13:57:15'!
-testAdjacentFloors
-	self
-		assert:
-			{1}
-		equals: aStart adjacentFloors.
-	self
-		assert:
-			{2}
-		equals: aGoal adjacentFloors.
-	example floorOfElevator: 1.
-	self
-		assert:
-			{0. 2}
-		equals: example adjacentFloors.! !
-
-!Day11StateTest methodsFor: 'testing' stamp: 'shnarazk 5/27/2022 11:29:39'!
-testCostToGoal
-	
-	self
-		assert: 11
-		equals: example costToGoal.! !
-
-!Day11StateTest methodsFor: 'testing' stamp: 'shnarazk 5/27/2022 13:23:40'!
-testFloorOfElevator
-	example floorOfElevator: 3.
-	self
-		assert: 3
-		equals: example floorOfElevator.
-	example floorOfElevator: 1.
-	self
-		assert: 1
-		equals: example floorOfElevator.
-	example floorOfElevator: 2.
-	self
-		assert: 2
-		equals: example floorOfElevator.! !
-
-!Day11StateTest methodsFor: 'testing' stamp: 'shnarazk 5/27/2022 11:48:09'!
-testFloorOfObject
-	self
-		assert: 0
-		equals: (example floorOfObject: 1).
-	self
-		assert: 1
-		equals: (example floorOfObject: 2).
-	self
-		assert: 0
-		equals: (example floorOfObject: 3).
-	self
-		assert: 2
-		equals: (example floorOfObject: 4).
-	self
-		assert: 0
-		equals: (example floorOfObject: 5).
-	self
-		assert: 1
-		equals: (example floorOfObject: (example objectIndexOfGenerator: 1)).
-	self
-		assert: 0
-		equals: (example floorOfObject: (example objectIndexOfChip: 1)).
-	self
-		assert: 2
-		equals: (example floorOfObject: (example objectIndexOfGenerator: 2)).
-	self
-		assert: 0
-		equals: (example floorOfObject: (example objectIndexOfChip: 2)).
-	self assert: 3 equals: (aGoal floorOfObject: 1).! !
-
-!Day11StateTest methodsFor: 'testing' stamp: 'shnarazk 5/27/2022 13:12:58'!
-testFloorOfObjectTo
-	example
-		floorOfObject: 2
-		to: 3.
-	self assert: 3 equals: (example floorOfObject: 2).
-	example
-		floorOfObject: 3
-		to: 2.
-	self assert: 2 equals: (example floorOfObject: 3).
-	example
-		floorOfObject: 4
-		to: 1.
-	self assert: 1 equals: (example floorOfObject: 4).
-	example
-		floorOfObject: 5
-		to: 0.
-	self assert: 0 equals: (example floorOfObject: 5).! !
-
-!Day11StateTest methodsFor: 'testing' stamp: 'shnarazk 5/27/2022 11:30:34'!
-testIsGoal
-	"a test"
-	self
-		assert: false
-		equals: aStart isGoal.
-	self
-		assert: true
-		equals: aGoal isGoal.
-		! !
-
-!Day11StateTest methodsFor: 'testing' stamp: 'shnarazk 5/27/2022 13:28:54'!
-testIsSafe
-	self
-		assert: true
-		equals: aStart isSafe.
-	self
-		assert: true
-		equals: aGoal isSafe.
-	self
-		assert: true
-		equals: example isSafe.! !
-
-!Day11StateTest methodsFor: 'testing' stamp: 'shnarazk 5/27/2022 07:56:19'!
-testNeighbarStates
-| states |
-states _ aStart neighborStates .
-self assert: states isEmpty equals: false.! !
-
-!Day11StateTest class methodsFor: 'instance creation' stamp: 'shnarazk 5/27/2022 01:53:47'!
-aStart
-	Day11State setKinds: 2.	
-	^Day11State new.! !
-
-!Day12Test methodsFor: 'testing' stamp: 'shnarazk 5/27/2022 22:36:17'!
-demoStart
- myComputer _ Day12 new.
-myComputer load: self example .
-myComputer start.! !
-
-!Day12Test methodsFor: 'testing' stamp: 'shnarazk 5/27/2022 22:34:32'!
-setUp
-	myComputer _ Day12 new.
-	myComputer load: self  example.! !
-
-!Day12Test methodsFor: 'accessing' stamp: 'shnarazk 5/27/2022 22:33:24'!
-example
-	^ {
-		{#cpy. 41. #a}. 
-		{#inc. #a}. 
-		{#inc. #a}. 
-		{#dec. #a}. 
-		{#jnz. #a. 2}. 
-		{#dec. #a}
-	}.! !
-
-!Day12Test class methodsFor: 'associating' stamp: 'shnarazk 5/27/2022 22:37:19'!
-demoStart
-| myComputer |
-	myComputer _ Day12 new.
-	myComputer load: self example.
-	myComputer start.! !
+!Day11State commentStamp: 'shnarazk 5/28/2022 09:31:19' prior: 0!
+Compressed state description. And it is a sub-class of TestCase for itself. So we don't need another class.!
 
 !Day11State methodsFor: 'accessing' stamp: 'shnarazk 5/27/2022 12:09:33'!
 code
 ^code! !
 
-!Day11State methodsFor: 'accessing' stamp: 'shnarazk 5/27/2022 09:07:23'!
-cost
-^cost! !
+!Day11State methodsFor: 'accessing' stamp: 'shnarazk 5/28/2022 14:40:50'!
+currentCost
+^currentCost! !
 
-!Day11State methodsFor: 'accessing' stamp: 'shnarazk 5/27/2022 14:13:19'!
-cost: aCost
+!Day11State methodsFor: 'accessing' stamp: 'shnarazk 5/28/2022 14:40:15'!
+currentCost: aCost
 	| g c |
-	cost _ aCost.
+	currentCost _ aCost.
 	"And update the estimated cost"
 	g _ 0.
 	c _ 0.
@@ -230,7 +71,7 @@ cost: aCost
 		do: [ :kind |
 			g _ g + 3 - (self floorOfGenerator: kind).
 			c _ c + 3 - (self floorOfChip: kind) ].
-	estimatedCost _ cost + g + (c * 2).! !
+	estimatedCost _ currentCost + g + (c * 2).! !
 
 !Day11State methodsFor: 'accessing' stamp: 'shnarazk 5/27/2022 09:07:37'!
 estimatedCost
@@ -259,12 +100,12 @@ floorOfGenerator: kind
 	index _ self objectIndexOfGenerator: kind.
 	^ self floorOfObject: index! !
 
-!Day11State methodsFor: 'initialization' stamp: 'shnarazk 5/27/2022 12:00:17'!
+!Day11State methodsFor: 'initialization' stamp: 'shnarazk 5/28/2022 14:39:05'!
 initialize
 	"every instance is initialized as being a start."
 	super initialize.
 	code _ 0.
-	cost  _ 0.
+	currentCost  _ 0.
 	estimatedCost _ 0.! !
 
 !Day11State methodsFor: 'initialization' stamp: 'shnarazk 5/25/2022 20:07:00'!
@@ -272,26 +113,8 @@ initializeAs: anIndex
 	self initialize.
 	code _ anIndex.! !
 
-!Day11State methodsFor: 'associating' stamp: 'shnarazk 5/27/2022 14:05:38'!
-neighborStates
-	"the main logic"
-	| floor result |
-	result _ Set new.
-	floor _ self floorOfElevator.
-	self
-		allObjectPairsOn: floor
-		do: [ :i :j |
-		
-			self adjacentFloors do: [ :f | | newState |
-				newState _ self
-					moveTo: f
-					with: i
-					and: j.
-				newState isSafe ifTrue: [ result add: newState ]]].
-	^ result.! !
-
-!Day11State methodsFor: 'evaluating' stamp: 'shnarazk 5/27/2022 13:57:52'!
-costToGoal
+!Day11State methodsFor: 'evaluating' stamp: 'shnarazk 5/28/2022 14:41:41'!
+cost
 	| visit toCheck depth |
 	depth _ 0.
 	visit _ Set new.
@@ -299,10 +122,10 @@ costToGoal
 	toCheck add: self.
 	[ toCheck isEmpty ] whileFalse: [ | state |
 		state _ toCheck removeFirst.
-		state isGoal ifTrue: [ ^ state cost ].
+		state isGoal ifTrue: [ ^ state currentCost ].
 		(visit includes: state code) ifFalse: [
 			visit add: state code.
-			depth _ depth max: state cost.
+			depth _ depth max: state currentCost.
 			state neighborStates do: [ :each |
 				toCheck add: each ]]].
 	Transcript
@@ -313,24 +136,41 @@ costToGoal
 		cr.
 	self error: 'wrong calculation'.! !
 
+!Day11State methodsFor: 'evaluating' stamp: 'shnarazk 5/28/2022 14:32:39'!
+ifSafe: aBlock
+	self isSafe
+		ifTrue: [ aBlock value: self ].! !
+
 !Day11State methodsFor: 'evaluating' stamp: 'shnarazk 5/25/2022 20:53:05'!
 isGoal
 	^ code = self class goal ! !
 
-!Day11State methodsFor: 'evaluating' stamp: 'shnarazk 5/27/2022 13:41:33'!
+!Day11State methodsFor: 'evaluating' stamp: 'shnarazk 5/28/2022 09:38:51'!
 isSafe
-	1
-		to: self class kinds
-		do: [ :k | | floor |
-			floor _ self floorOfChip: k.
-			(self floorOfGenerator: k) = floor ifFalse: [
-				1
-					to: self class kinds
-					do: [ :i |
-						(self floorOfGenerator: i) = floor ifTrue: [
-							
-							^ false ]]]].
+	self forAllKinds: [ :k | | floor |
+		floor _ self floorOfChip: k.
+		(self floorOfGenerator: k) = floor ifFalse: [
+			self forAllKinds: [ :i |
+					(self floorOfGenerator: i) = floor ifTrue: [ ^ false ]]]].
 	^ true.! !
+
+!Day11State methodsFor: 'evaluating' stamp: 'shnarazk 5/28/2022 14:31:22'!
+neighborStates
+	"the main logic"
+	| floor result |
+	result _ Set new.
+	floor _ self floorOfElevator.
+	self
+		allObjectPairsOn: floor
+		do: [ :i :j |
+			self adjacentFloors do: [ :f | | newState |
+				newState _ self
+					moveTo: f
+					with: i
+					and: j.
+				newState ifSafe: [ :s |
+					result add: s ]]].
+	^ result.! !
 
 !Day11State methodsFor: 'comparing' stamp: 'shnarazk 5/27/2022 09:07:54'!
 <= other
@@ -395,7 +235,7 @@ floorOfObject: anObject to: floor
 	code _ code bitClear: mask.
 	floor odd ifTrue: [ code _ code bitOr: mask ].! !
 
-!Day11State methodsFor: 'private' stamp: 'shnarazk 5/27/2022 13:17:00'!
+!Day11State methodsFor: 'private' stamp: 'shnarazk 5/28/2022 14:40:50'!
 moveTo: floor with: anObjest and: anotherObject
 	| state |
 	state _ self class new initializeAs: code.
@@ -406,7 +246,7 @@ moveTo: floor with: anObjest and: anotherObject
 	state
 		floorOfObject: anotherObject
 		to: floor.
-	state cost: self cost + 1.
+	state currentCost: self currentCost + 1.
 	^ state.! !
 
 !Day11State methodsFor: 'private' stamp: 'shnarazk 5/27/2022 01:34:43'!
@@ -418,6 +258,115 @@ objectIndexOfChip: k
 objectIndexOfGenerator: k
 "index starts from 1 in Smalltalk. And 1 is used for Elevator."
 ^ k * 2! !
+
+!Day11State methodsFor: 'testing' stamp: 'shnarazk 5/28/2022 09:24:10'!
+setUp
+	self class setKinds: 2.
+	aStart _ self class new.
+	aGoal _ self class new initializeAs: 1023.
+	example _ self class represents:
+		{1. 0. 2. 0}.! !
+
+!Day11State methodsFor: 'testing' stamp: 'shnarazk 5/28/2022 09:28:07'!
+testAdjacentFloors
+	self
+		assert:
+			{1}
+		equals: aStart adjacentFloors.
+	self
+		assert:
+			{2}
+		equals: aGoal adjacentFloors.
+	example floorOfElevator: 1.
+	self
+		assert:
+			{0. 2}
+		equals: example adjacentFloors.! !
+
+!Day11State methodsFor: 'testing' stamp: 'shnarazk 5/28/2022 14:41:41'!
+testCostToGoal
+self assert: 11 equals: example cost .! !
+
+!Day11State methodsFor: 'testing' stamp: 'shnarazk 5/28/2022 09:27:56'!
+testFloorOfElevator
+	example floorOfElevator: 3.
+	self
+		assert: 3
+		equals: example floorOfElevator.
+	example floorOfElevator: 1.
+	self
+		assert: 1
+		equals: example floorOfElevator.
+	example floorOfElevator: 2.
+	self
+		assert: 2
+		equals: example floorOfElevator.! !
+
+!Day11State methodsFor: 'testing' stamp: 'shnarazk 5/28/2022 09:27:44'!
+testFloorOfObject
+	self
+		assert: 0
+		equals: (example floorOfObject: 1).
+	self
+		assert: 1
+		equals: (example floorOfObject: 2).
+	self
+		assert: 0
+		equals: (example floorOfObject: 3).
+	self
+		assert: 2
+		equals: (example floorOfObject: 4).
+	self
+		assert: 0
+		equals: (example floorOfObject: 5).
+	self
+		assert: 1
+		equals: (example floorOfObject: (example objectIndexOfGenerator: 1)).
+	self
+		assert: 0
+		equals: (example floorOfObject: (example objectIndexOfChip: 1)).
+	self
+		assert: 2
+		equals: (example floorOfObject: (example objectIndexOfGenerator: 2)).
+	self
+		assert: 0
+		equals: (example floorOfObject: (example objectIndexOfChip: 2)).
+	self assert: 3 equals: (aGoal floorOfObject: 1).! !
+
+!Day11State methodsFor: 'testing' stamp: 'shnarazk 5/28/2022 09:27:31'!
+testFloorOfObjectTo
+	example
+		floorOfObject: 2
+		to: 3.
+	self assert: 3 equals: (example floorOfObject: 2).
+	example
+		floorOfObject: 3
+		to: 2.
+	self assert: 2 equals: (example floorOfObject: 3).
+	example
+		floorOfObject: 4
+		to: 1.
+	self assert: 1 equals: (example floorOfObject: 4).
+	example
+		floorOfObject: 5
+		to: 0.
+	self assert: 0 equals: (example floorOfObject: 5).! !
+
+!Day11State methodsFor: 'testing' stamp: 'shnarazk 5/28/2022 09:27:15'!
+testIsSafe
+	self
+		assert: true
+		equals: aStart isSafe.
+	self
+		assert: true
+		equals: aGoal isSafe.
+	self
+		assert: true
+		equals: example isSafe.! !
+
+!Day11State methodsFor: 'running' stamp: 'shnarazk 5/28/2022 09:37:00'!
+forAllKinds: aBlock
+1 to: self class kinds do: aBlock ! !
 
 !Day11State class methodsFor: 'accessing' stamp: 'shnarazk 5/25/2022 20:51:58'!
 goal
@@ -452,21 +401,213 @@ represents: vec
 	code _ vec inject: 0 into: [ :total :val | (total * 4) + val].
 	^self newAs: code! !
 
-!Day11State class methodsFor: 'as yet unclassified' stamp: 'shnarazk 5/27/2022 14:03:57'!
+!Day11State class methodsFor: 'evaluating' stamp: 'shnarazk 5/28/2022 14:43:06'!
 part1
 	| start |
 	Day11State setKinds: 5.
 	start _ Day11State represents:
 		{0. 0. 0. 0. 1. 2. 1. 1. 1. 1}.
-	Transcript show: start costToGoal .! !
+	Transcript show: start cost.! !
 
-!Day11State class methodsFor: 'as yet unclassified' stamp: 'shnarazk 5/27/2022 14:04:14'!
+!Day11State class methodsFor: 'evaluating' stamp: 'shnarazk 5/28/2022 14:41:41'!
 part2
 	| start |
 	Day11State setKinds: 7.
 	start _ Day11State represents:
 		{0. 0. 0. 0. 1. 2. 1. 1. 1. 1. 0. 0. 0. 0. }.
-	Transcript show: start costToGoal.! !
+	Transcript show: start cost.! !
+
+!Day12Test methodsFor: 'testing' stamp: 'shnarazk 5/27/2022 22:36:17'!
+demoStart
+ myComputer _ Day12 new.
+myComputer load: self example .
+myComputer start.! !
+
+!Day12Test methodsFor: 'testing' stamp: 'shnarazk 5/27/2022 22:34:32'!
+setUp
+	myComputer _ Day12 new.
+	myComputer load: self  example.! !
+
+!Day12Test methodsFor: 'accessing' stamp: 'shnarazk 5/27/2022 22:33:24'!
+example
+	^ {
+		{#cpy. 41. #a}. 
+		{#inc. #a}. 
+		{#inc. #a}. 
+		{#dec. #a}. 
+		{#jnz. #a. 2}. 
+		{#dec. #a}
+	}.! !
+
+!Day12Test class methodsFor: 'associating' stamp: 'shnarazk 5/27/2022 22:37:19'!
+demoStart
+| myComputer |
+	myComputer _ Day12 new.
+	myComputer load: self example.
+	myComputer start.! !
+
+!Day13 methodsFor: 'running' stamp: 'shnarazk 5/28/2022 21:18:40'!
+setUp
+	super setUp.
+	favorite _ 10.! !
+
+!Day13 methodsFor: 'evaluating' stamp: 'shnarazk 5/28/2022 20:19:23'!
+isGoal: aTuple
+	| x y  |
+	x _ aTuple at: 3.
+	y _ aTuple at: 4.
+	^ x = (goal at: 1) and: [ y = (goal at: 2) ]! !
+
+!Day13 methodsFor: 'evaluating' stamp: 'shnarazk 5/28/2022 21:20:39'!
+isOpenSpace: aTuple
+	| x y val ones |
+	x _ aTuple at: 3.
+	y _ aTuple at: 4.
+	val _ x * x + (x * 3) + (x * y * 2) + y + (y * y).
+	val _ val + favorite.
+	ones _ 0.
+	[ val > 0 ] whileTrue: [
+		(val bitAnd: 1) > 0 ifTrue: [ ones _ ones + 1 ].
+		val _ val // 2 ].
+	^ ones even.! !
+
+!Day13 methodsFor: 'evaluating' stamp: 'shnarazk 5/28/2022 23:35:57'!
+rechableSitesBy: aLimit
+	goal _ {1. 1}.
+	cost _ Dictionary new.
+	cost
+		at:
+			{1. 1}
+		put: 0.
+	toEvaluate _ Heap sortBlock: [ :a :b |
+		(a at: 1) <= (b at: 1) ].
+	toEvaluate add:
+		{(goal at: 1) + (goal at: 2). 0. 1. 1}.
+	[ toEvaluate isEmpty ] whileFalse: [ | state |
+		state _ toEvaluate removeFirst.
+		(aLimit < (state at: 2)) ifTrue: [
+			^ (cost select:  [:val | val isNil  not and: [val <= aLimit ]]) size.].
+		self registerNextStatesOf: state ].! !
+
+!Day13 methodsFor: 'evaluating' stamp: 'shnarazk 5/28/2022 23:39:13'!
+registerNextStatesOf: aState
+	| c x y xrange yrange |
+	c _ aState at: 2.
+	x _ aState at: 3.
+	y _ aState at: 4.
+	Transcript show:
+		{x. y}.
+	xrange _ x = 0
+		ifTrue:
+			{0. 1}
+		ifFalse:
+			{x - 1. x. x + 1}.
+	yrange _ y = 0
+		ifTrue:
+			{0. 1}
+		ifFalse:
+			{y - 1. y. y + 1}.
+	self
+		rangeX: xrange
+		andY: yrange
+		require: [ :xx :yy |
+			x = xx or: y = yy ]
+		on: [ :xx :yy | | newState xdist ydist location |
+			location _ {xx. yy}.
+			xdist _ ((goal at: 1) - xx) abs.
+			ydist _ ((goal at: 2) - yy) abs.
+			newState _ {c + 1 + xdist + ydist. c + 1. xx. yy}.
+			(cost includesKey: location) ifFalse: [
+				(self isOpenSpace: newState)
+					ifTrue: [ 
+						cost
+					at: location
+					put: c + 1.
+						toEvaluate add: newState ]
+					ifFalse: [
+						cost
+							at: location
+							put: nil ]]].! !
+
+!Day13 methodsFor: 'evaluating' stamp: 'shnarazk 5/28/2022 23:23:22'!
+stepsTo: aGoal
+	goal _ aGoal.
+	cost _ Dictionary new.
+	cost
+		at:
+			{1. 1}
+		put: 0.
+	toEvaluate _ Heap sortBlock: [ :a :b |
+		(a at: 1) <= (b at: 1) ].
+	toEvaluate add:
+		{(goal at: 1) + (goal at: 2). 0. 1. 1}.
+	[ toEvaluate isEmpty ] whileFalse: [ | state |
+		state _ toEvaluate removeFirst.
+		(self isGoal: state) ifTrue: [
+			"Transcript show: cost size."
+			^ state at: 2 ].
+		self registerNextStatesOf: state ].! !
+
+!Day13 methodsFor: 'accessing' stamp: 'shnarazk 5/28/2022 21:17:53'!
+favorite
+^favorite ! !
+
+!Day13 methodsFor: 'accessing' stamp: 'shnarazk 5/28/2022 21:18:06'!
+favorite: aNumber
+	 favorite _ aNumber ! !
+
+!Day13 methodsFor: 'accessing' stamp: 'shnarazk 5/28/2022 22:51:44'!
+rangeX: aRange andY: anotherRange require: filterBlock on: aBlock
+	aRange do: [ :x |
+		anotherRange do: [ :y |
+			(filterBlock
+				value: x
+				value: y) ifTrue: [
+				aBlock
+					value: x
+					value: y ]]].! !
+
+!Day13 methodsFor: 'testing' stamp: 'shnarazk 5/28/2022 21:15:38'!
+testIsOpenSpace
+	self
+		assert: true
+		equals:
+			(self isOpenSpace:
+				{0. 0. 1. 1}).
+	self
+		assert: true
+		equals:
+			(self isOpenSpace:
+				{0. 0. 1. 2}).
+	self
+		assert: false
+		equals:
+			(self isOpenSpace:
+				{0. 0. 0. 2}).
+	self
+		assert: false
+		equals:
+			(self isOpenSpace:
+				{0. 0. 5. 1}).! !
+
+!Day13 methodsFor: 'testing' stamp: 'shnarazk 5/28/2022 21:02:55'!
+testStepsTo
+self assert: 11 equals: (self stepsTo: #(7 4)).! !
+
+!Day13 class methodsFor: 'instance creation' stamp: 'shnarazk 5/28/2022 22:44:42'!
+part1
+	| solver |
+	solver _ self new.
+	solver favorite: 1364.
+	^ solver stepsTo:
+		{31.  39}.! !
+
+!Day13 class methodsFor: 'instance creation' stamp: 'shnarazk 5/28/2022 23:36:36'!
+part2
+	| solver |
+	solver _ self new.
+	solver favorite: 1364.
+	^ solver rechableSitesBy: 50.! !
 
 !Day12 methodsFor: 'evaluating' stamp: 'shnarazk 5/27/2022 23:20:17'!
 execute: anInstruction

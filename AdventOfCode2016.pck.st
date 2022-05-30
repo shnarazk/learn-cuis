@@ -1,6 +1,6 @@
-'From Cuis 6.0 [latest update: #5202] on 28 May 2022 at 11:40:21 pm'!
+'From Cuis 6.0 [latest update: #5202] on 31 May 2022 at 5:47:21 am'!
 'Description '!
-!provides: 'AdventOfCode2016' 1 8!
+!provides: 'AdventOfCode2016' 1 9!
 SystemOrganization addCategory: 'AdventOfCode2016-Day11'!
 SystemOrganization addCategory: 'AdventOfCode2016-Day12'!
 SystemOrganization addCategory: 'AdventOfCode2016-Day13'!
@@ -451,18 +451,15 @@ setUp
 	super setUp.
 	favorite _ 10.! !
 
-!Day13 methodsFor: 'evaluating' stamp: 'shnarazk 5/28/2022 20:19:23'!
+!Day13 methodsFor: 'evaluating' stamp: 'shnarazk 5/31/2022 05:28:20'!
 isGoal: aTuple
-	| x y  |
-	x _ aTuple at: 3.
-	y _ aTuple at: 4.
-	^ x = (goal at: 1) and: [ y = (goal at: 2) ]! !
+	^ (aTuple at: 3) = goal! !
 
-!Day13 methodsFor: 'evaluating' stamp: 'shnarazk 5/28/2022 21:20:39'!
+!Day13 methodsFor: 'evaluating' stamp: 'shnarazk 5/31/2022 05:29:17'!
 isOpenSpace: aTuple
 	| x y val ones |
-	x _ aTuple at: 3.
-	y _ aTuple at: 4.
+	x _ (aTuple at: 3) x.
+	y _ (aTuple at: 3) y.
 	val _ x * x + (x * 3) + (x * y * 2) + y + (y * y).
 	val _ val + favorite.
 	ones _ 0.
@@ -471,32 +468,29 @@ isOpenSpace: aTuple
 		val _ val // 2 ].
 	^ ones even.! !
 
-!Day13 methodsFor: 'evaluating' stamp: 'shnarazk 5/28/2022 23:35:57'!
+!Day13 methodsFor: 'evaluating' stamp: 'shnarazk 5/31/2022 05:44:35'!
 rechableSitesBy: aLimit
-	goal _ {1. 1}.
+	goal _ 1 @ 1.
 	cost _ Dictionary new.
 	cost
-		at:
-			{1. 1}
+		at: goal
 		put: 0.
 	toEvaluate _ Heap sortBlock: [ :a :b |
 		(a at: 1) <= (b at: 1) ].
 	toEvaluate add:
-		{(goal at: 1) + (goal at: 2). 0. 1. 1}.
+		{goal x + goal y. 0. 1@1}.
 	[ toEvaluate isEmpty ] whileFalse: [ | state |
 		state _ toEvaluate removeFirst.
-		(aLimit < (state at: 2)) ifTrue: [
-			^ (cost select:  [:val | val isNil  not and: [val <= aLimit ]]) size.].
+		aLimit < (state at: 2) ifTrue: [ ^ (cost select: [ :val |
+				val isNil not and: [ val <= aLimit ]]) size ].
 		self registerNextStatesOf: state ].! !
 
-!Day13 methodsFor: 'evaluating' stamp: 'shnarazk 5/28/2022 23:39:13'!
+!Day13 methodsFor: 'evaluating' stamp: 'shnarazk 5/31/2022 05:37:14'!
 registerNextStatesOf: aState
 	| c x y xrange yrange |
 	c _ aState at: 2.
-	x _ aState at: 3.
-	y _ aState at: 4.
-	Transcript show:
-		{x. y}.
+	x _ (aState at: 3) x.
+	y _ (aState at: 3) y.
 	xrange _ x = 0
 		ifTrue:
 			{0. 1}
@@ -510,41 +504,38 @@ registerNextStatesOf: aState
 	self
 		rangeX: xrange
 		andY: yrange
-		require: [ :xx :yy |
-			x = xx or: y = yy ]
-		on: [ :xx :yy | | newState xdist ydist location |
-			location _ {xx. yy}.
-			xdist _ ((goal at: 1) - xx) abs.
-			ydist _ ((goal at: 2) - yy) abs.
-			newState _ {c + 1 + xdist + ydist. c + 1. xx. yy}.
-			(cost includesKey: location) ifFalse: [
+		require: [ :p |
+			p x = x or: p y = y ]
+		on: [ :p | | newState xdist ydist |
+			xdist _ (goal x - p x) abs.
+			ydist _ (goal y - p y) abs.
+			newState _ {c + 1 + xdist + ydist. c + 1. p}.
+			(cost includesKey: p) ifFalse: [
 				(self isOpenSpace: newState)
-					ifTrue: [ 
+					ifTrue: [
 						cost
-					at: location
-					put: c + 1.
+							at: p
+							put: c + 1.
 						toEvaluate add: newState ]
 					ifFalse: [
 						cost
-							at: location
+							at: p
 							put: nil ]]].! !
 
-!Day13 methodsFor: 'evaluating' stamp: 'shnarazk 5/28/2022 23:23:22'!
+!Day13 methodsFor: 'evaluating' stamp: 'shnarazk 5/31/2022 05:41:16'!
 stepsTo: aGoal
 	goal _ aGoal.
 	cost _ Dictionary new.
 	cost
-		at:
-			{1. 1}
+		at: 1 @ 1
 		put: 0.
 	toEvaluate _ Heap sortBlock: [ :a :b |
 		(a at: 1) <= (b at: 1) ].
 	toEvaluate add:
-		{(goal at: 1) + (goal at: 2). 0. 1. 1}.
+		{goal x + goal y. 0. 1@1}.
 	[ toEvaluate isEmpty ] whileFalse: [ | state |
 		state _ toEvaluate removeFirst.
-		(self isGoal: state) ifTrue: [
-			"Transcript show: cost size."
+		(self isGoal: state) ifTrue: [ "Transcript show: cost size."
 			^ state at: 2 ].
 		self registerNextStatesOf: state ].! !
 
@@ -556,51 +547,50 @@ favorite
 favorite: aNumber
 	 favorite _ aNumber ! !
 
-!Day13 methodsFor: 'accessing' stamp: 'shnarazk 5/28/2022 22:51:44'!
+!Day13 methodsFor: 'accessing' stamp: 'shnarazk 5/31/2022 05:30:08'!
 rangeX: aRange andY: anotherRange require: filterBlock on: aBlock
 	aRange do: [ :x |
 		anotherRange do: [ :y |
 			(filterBlock
-				value: x
-				value: y) ifTrue: [
+				value: x@y) ifTrue: [
 				aBlock
-					value: x
-					value: y ]]].! !
+					value: x@y ]]].! !
 
-!Day13 methodsFor: 'testing' stamp: 'shnarazk 5/28/2022 21:15:38'!
+!Day13 methodsFor: 'testing' stamp: 'shnarazk 5/31/2022 05:38:59'!
 testIsOpenSpace
 	self
 		assert: true
 		equals:
 			(self isOpenSpace:
-				{0. 0. 1. 1}).
+				{0. 0. 1@1}).
 	self
 		assert: true
 		equals:
 			(self isOpenSpace:
-				{0. 0. 1. 2}).
+				{0. 0. 1@2}).
 	self
 		assert: false
 		equals:
 			(self isOpenSpace:
-				{0. 0. 0. 2}).
+				{0. 0. 0@2}).
 	self
 		assert: false
 		equals:
 			(self isOpenSpace:
-				{0. 0. 5. 1}).! !
+				{0. 0. 5@1}).! !
 
-!Day13 methodsFor: 'testing' stamp: 'shnarazk 5/28/2022 21:02:55'!
+!Day13 methodsFor: 'testing' stamp: 'shnarazk 5/31/2022 05:39:31'!
 testStepsTo
-self assert: 11 equals: (self stepsTo: #(7 4)).! !
+	self
+		assert: 11
+		equals: (self stepsTo: 7 @4 ).! !
 
-!Day13 class methodsFor: 'instance creation' stamp: 'shnarazk 5/28/2022 22:44:42'!
+!Day13 class methodsFor: 'instance creation' stamp: 'shnarazk 5/31/2022 05:26:38'!
 part1
 	| solver |
 	solver _ self new.
 	solver favorite: 1364.
-	^ solver stepsTo:
-		{31.  39}.! !
+	^ solver stepsTo: 31@39.! !
 
 !Day13 class methodsFor: 'instance creation' stamp: 'shnarazk 5/28/2022 23:36:36'!
 part2

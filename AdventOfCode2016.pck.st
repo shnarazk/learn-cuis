@@ -1,6 +1,6 @@
-'From Cuis 6.0 [latest update: #5202] on 31 May 2022 at 5:47:21 am'!
+'From Cuis 6.0 [latest update: #5202] on 31 May 2022 at 1:05:29 pm'!
 'Description '!
-!provides: 'AdventOfCode2016' 1 9!
+!provides: 'AdventOfCode2016' 1 12!
 SystemOrganization addCategory: 'AdventOfCode2016-Day11'!
 SystemOrganization addCategory: 'AdventOfCode2016-Day12'!
 SystemOrganization addCategory: 'AdventOfCode2016-Day13'!
@@ -35,6 +35,16 @@ TestCase subclass: #Day13
 	category: 'AdventOfCode2016-Day13'!
 !classDefinition: 'Day13 class' category: 'AdventOfCode2016-Day13'!
 Day13 class
+	instanceVariableNames: ''!
+
+!classDefinition: #Day16 category: 'AdventOfCode2016'!
+TestCase subclass: #Day16
+	instanceVariableNames: 'length notShrink'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'AdventOfCode2016'!
+!classDefinition: 'Day16 class' category: 'AdventOfCode2016'!
+Day16 class
 	instanceVariableNames: ''!
 
 !classDefinition: #Day12 category: 'AdventOfCode2016-Day12'!
@@ -598,6 +608,127 @@ part2
 	solver _ self new.
 	solver favorite: 1364.
 	^ solver rechableSitesBy: 50.! !
+
+!Day16 methodsFor: 'testing' stamp: 'shnarazk 5/31/2022 12:20:45'!
+testExpand
+	notShrink _ true.
+	length _ 2.
+	self
+		assert:
+			(self expand:
+				{true})
+		equals:
+			{true. false. false}.
+	self
+		assert:
+			(self expand:
+				{false})
+		equals:
+			{false. false. true}.
+	length _ 6.
+	self
+		assert:
+			(self expand:
+				{true. true. true. true. true})
+		equals:
+			{true. true. true. true. true. false. false. false. false. false. false}.! !
+
+!Day16 methodsFor: 'testing' stamp: 'shnarazk 5/31/2022 09:27:42'!
+testShrink
+	self
+		assert:
+			(self shrink:
+				{true. true. true. true})
+		equals:
+			{true}.
+	self
+		assert:
+			(self shrink:
+				{true. true. false. true})
+		equals:
+			{false}.
+	self
+		assert:
+			(self shrink:
+				{true. false. true})
+		equals:
+			{true. false. true}.! !
+
+!Day16 methodsFor: 'initialization' stamp: 'shnarazk 5/31/2022 12:14:12'!
+initialize
+	super initialize.
+	notShrink _ false.! !
+
+!Day16 methodsFor: 'converting' stamp: 'shnarazk 5/31/2022 12:27:22'!
+fromString: aString
+	^ (aString collect:
+		[ :char |
+		char = $1 ] ) asArray.! !
+
+!Day16 methodsFor: 'converting' stamp: 'shnarazk 5/31/2022 12:42:47'!
+toString: aVec
+	^ aVec
+		inject: ''
+		into:
+			[ :str :bool |
+			bool
+				ifTrue: [ str , '1' ]
+				ifFalse: [ str , '0' ]].! !
+
+!Day16 methodsFor: 'evaluating' stamp: 'shnarazk 5/31/2022 13:04:31'!
+expand: aVec
+	aVec size < length ifTrue: [ ^ self expand:
+			aVec ,
+				{false} ,
+				(aVec reverse collect: [ :v |
+					v not ]) ].
+	notShrink ifTrue: [ ^ aVec ].
+	"Transcript show: 'Fullfilled: ' , (self toString: aVec)."
+	^ self shrink:
+		(aVec
+			copyFrom: 1
+			count: length).! !
+
+!Day16 methodsFor: 'evaluating' stamp: 'shnarazk 5/31/2022 13:04:39'!
+shrink: aVec
+	"Transcript show: 'Reducing: ' , (self toString: aVec)."
+	aVec size odd
+		ifTrue: [ ^ self toString: aVec ]
+		ifFalse: [ | tmp |
+			tmp _ ((1 to: aVec size) select: [ :i |
+				i odd ]) collect: [ :i |
+				(aVec at: i) = (aVec at: i + 1) ].
+			^ self shrink: tmp ].! !
+
+!Day16 methodsFor: 'as yet unclassified' stamp: 'shnarazk 5/31/2022 12:25:25'!
+length: aNumber
+length _ aNumber ! !
+
+!Day16 class methodsFor: 'as yet unclassified' stamp: 'shnarazk 5/31/2022 12:28:02'!
+example
+	| solver data |
+	solver _ self new.
+	solver length: 20.
+	data _ solver fromString: '10000'.
+	^ solver  expand: data.! !
+
+!Day16 class methodsFor: 'as yet unclassified' stamp: 'shnarazk 5/31/2022 12:53:19'!
+part1
+	| solver data |
+	solver _ self new.
+	solver length: 272.
+	data _ solver fromString: '10001110011110000'.
+	Transcript show: 'Given: ', (solver toString: data).
+	^ solver expand: data.! !
+
+!Day16 class methodsFor: 'as yet unclassified' stamp: 'shnarazk 5/31/2022 13:04:12'!
+part2
+	| solver data |
+	solver _ self new.
+	solver length: 35651584.
+	data _ solver fromString: '10001110011110000'.
+	Transcript show: 'Given: ' , (solver toString: data).
+	^ solver expand: data.! !
 
 !Day12 methodsFor: 'evaluating' stamp: 'shnarazk 5/27/2022 23:20:17'!
 execute: anInstruction

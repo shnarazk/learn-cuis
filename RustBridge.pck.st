@@ -1,6 +1,6 @@
-'From Cuis 6.0 [latest update: #5202] on 2 June 2022 at 12:49:30 am'!
+'From Cuis 6.0 [latest update: #5202] on 2 June 2022 at 1:55:44 am'!
 'Description '!
-!provides: 'RustBridge' 1 9!
+!provides: 'RustBridge' 1 13!
 SystemOrganization addCategory: 'RustBridge'!
 
 
@@ -601,9 +601,9 @@ initialize
 super initialize .
 self defineFields .! !
 
-!RustCaller1 methodsFor: 'testing' stamp: 'shnarazk 6/2/2022 00:26:55'!
+!RustCaller1 methodsFor: 'testing' stamp: 'shnarazk 6/2/2022 01:30:10'!
 hashMD5: arg
-	<cdecl: B128* 'hash' (B128*) module: '/Users/nash/.cargo/shared-target/release/libbridge_to_md5.dylib'>
+	<cdecl: ulong 'hash' (B128*) module: '/Users/nash/.cargo/shared-target/release/libbridge_to_md5.dylib'>
 	^ self externalCallFailed.! !
 
 !RustCaller1 methodsFor: 'testing' stamp: 'shnarazk 5/31/2022 08:44:17'!
@@ -630,15 +630,16 @@ test3: arg
 	<cdecl: B80* 'rustfunc3' (B80*) module: '/Users/nash/.cargo/shared-target/release/librust_ffi_demo.dylib'>
 	^ self externalCallFailed.! !
 
-!RustCaller1 methodsFor: 'testing' stamp: 'shnarazk 6/2/2022 00:49:13'!
+!RustCaller1 methodsFor: 'testing' stamp: 'shnarazk 6/2/2022 01:55:18'!
 testMd5
-	| key tmp |
+	| key |
 	key _ B128 new.
 	key b0: $a asciiValue.
 	key b1: $b asciiValue.
 	key b2: $c asciiValue.
-	key b3: $0 asciiValue .
-	tmp _ self hashMD5: key.
-	^ {tmp b0. tmp b1. tmp b2. tmp b3}.! !
+	key b3: $0 asciiValue.
+	self hashMD5: key.
+	^ '' join: (key getHandle asArray collect: [ :each |
+		Character asciiValue: each ])! !
 B128 initialize!
 B80 initialize!

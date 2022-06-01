@@ -14,3 +14,17 @@ pub unsafe extern "C" fn rustfunc2(c_buf: *const c_char) -> f64 {
     dbg!(str_slice);
     0.0
 }
+
+#[repr(C)]
+pub struct B80 {
+    a: [u8; 10],
+}
+/// # Safety
+/// Prubably it's safe.
+#[no_mangle]
+pub unsafe extern "C" fn rustfunc3(buf: &mut B80) -> B80 {
+    dbg!(buf.a[0]);
+    B80 {
+        a: [1, 2, 3, 0, 1, 2, 3, 0, 1, 2],
+    }
+}

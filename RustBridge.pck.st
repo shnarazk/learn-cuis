@@ -1,6 +1,6 @@
-'From Cuis 6.0 [latest update: #5202] on 2 June 2022 at 12:27:02 am'!
+'From Cuis 6.0 [latest update: #5202] on 2 June 2022 at 12:49:30 am'!
 'Description '!
-!provides: 'RustBridge' 1 8!
+!provides: 'RustBridge' 1 9!
 SystemOrganization addCategory: 'RustBridge'!
 
 
@@ -630,13 +630,14 @@ test3: arg
 	<cdecl: B80* 'rustfunc3' (B80*) module: '/Users/nash/.cargo/shared-target/release/librust_ffi_demo.dylib'>
 	^ self externalCallFailed.! !
 
-!RustCaller1 methodsFor: 'testing' stamp: 'shnarazk 6/2/2022 00:25:58'!
+!RustCaller1 methodsFor: 'testing' stamp: 'shnarazk 6/2/2022 00:49:13'!
 testMd5
 	| key tmp |
 	key _ B128 new.
 	key b0: $a asciiValue.
 	key b1: $b asciiValue.
 	key b2: $c asciiValue.
+	key b3: $0 asciiValue .
 	tmp _ self hashMD5: key.
 	^ {tmp b0. tmp b1. tmp b2. tmp b3}.! !
 B128 initialize!

@@ -17,8 +17,8 @@ pub unsafe extern "C" fn hash(i: &B128) -> B128 {
         .collect::<String>();
     hasher.update(input);
     let st = format!("{:x}", hasher.finalize());
+    assert_eq!(st.chars().count(), 32);
     let mut vec = [0; 32];
-    debug_assert_eq!(st.chars().count(), 32);
     for (i, c) in st.chars().enumerate() {
         vec[i] = c as u8;
     }
@@ -30,9 +30,13 @@ mod tests {
     use super::*;
     #[test]
     fn it_works() {
-        let b = B128 { s: [34; 32] };
+        let mut b = B128 { s: [0; 32] };
+        b.s[0] = b'a';
+        b.s[1] = b'b';
+        b.s[2] = b'c';
+        b.s[3] = b'0';
         unsafe {
-            dbg!(&hash(&b).s);
+            println!("{}", std::str::from_utf8_unchecked(&hash(&b).s));
         }
     }
 }

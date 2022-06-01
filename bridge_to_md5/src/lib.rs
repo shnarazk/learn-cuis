@@ -8,18 +8,18 @@ pub struct B128 {
 /// # Safety
 /// It's safe.
 #[no_mangle]
-pub unsafe extern "C" fn hash(i: &mut [u8; 32]) -> u32 {
-    let mut hasher = Md5::new();
-    let inp = std::str::from_utf8(i).unwrap();
-    let input = inp
+pub unsafe extern "C" fn hash(buffer: &mut [u8; 32]) -> u32 {
+    let trimmed = std::str::from_utf8(buffer)
+        .unwrap()
         .chars()
         .filter(|c| ('0' <= *c && *c <= '9') || ('a' <= *c && *c <= 'f'))
         .collect::<String>();
-    hasher.update(input);
+    let mut hasher = Md5::new();
+    hasher.update(trimmed);
     let st = format!("{:x}", hasher.finalize());
-    assert_eq!(st.chars().count(), 32);
-    for (ix, c) in st.chars().enumerate() {
-        i[ix] = c as u8;
+    // assert_eq!(st.chars().count(), 32);
+    for (i, c) in st.chars().enumerate() {
+        buffer[i] = c as u8;
     }
     0u32
 }
@@ -37,6 +37,10 @@ mod tests {
         unsafe {
             hash(&mut b);
             println!("{}", std::str::from_utf8_unchecked(&b));
+            assert_eq!(
+                std::str::from_utf8_unchecked(&b),
+                "577571be4de9dcce85a041ba0410f29f"
+            );
         }
     }
 }

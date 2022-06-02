@@ -1,6 +1,7 @@
-'From Cuis 6.0 [latest update: #5202] on 31 May 2022 at 1:05:29 pm'!
+'From Cuis 6.0 [latest update: #5213] on 2 June 2022 at 11:55:02 pm'!
 'Description '!
-!provides: 'AdventOfCode2016' 1 12!
+!provides: 'AdventOfCode2016' 1 15!
+!requires: 'RustBridge' 1 13 nil!
 SystemOrganization addCategory: 'AdventOfCode2016-Day11'!
 SystemOrganization addCategory: 'AdventOfCode2016-Day12'!
 SystemOrganization addCategory: 'AdventOfCode2016-Day13'!
@@ -45,6 +46,16 @@ TestCase subclass: #Day16
 	category: 'AdventOfCode2016'!
 !classDefinition: 'Day16 class' category: 'AdventOfCode2016'!
 Day16 class
+	instanceVariableNames: ''!
+
+!classDefinition: #Day17 category: 'AdventOfCode2016'!
+TestCase subclass: #Day17
+	instanceVariableNames: 'currestCost estimatedCost state key'
+	classVariableNames: 'Hasher Input ToVisit Visit'
+	poolDictionaries: ''
+	category: 'AdventOfCode2016'!
+!classDefinition: 'Day17 class' category: 'AdventOfCode2016'!
+Day17 class
 	instanceVariableNames: ''!
 
 !classDefinition: #Day12 category: 'AdventOfCode2016-Day12'!
@@ -730,6 +741,107 @@ part2
 	Transcript show: 'Given: ' , (solver toString: data).
 	^ solver expand: data.! !
 
+!Day17 methodsFor: 'accessing' stamp: 'shnarazk 6/2/2022 20:53:22'!
+at
+	^state! !
+
+!Day17 methodsFor: 'accessing' stamp: 'shnarazk 6/2/2022 20:53:08'!
+at: aPoint
+ state _ aPoint ! !
+
+!Day17 methodsFor: 'accessing' stamp: 'shnarazk 6/2/2022 20:47:29'!
+currentCost
+^currestCost ! !
+
+!Day17 methodsFor: 'accessing' stamp: 'shnarazk 6/2/2022 20:48:50'!
+currentCost: aCost
+	currestCost _ aCost ! !
+
+!Day17 methodsFor: 'accessing' stamp: 'shnarazk 6/2/2022 20:48:21'!
+estimatedCost
+	^estimatedCost ! !
+
+!Day17 methodsFor: 'accessing' stamp: 'shnarazk 6/2/2022 20:48:35'!
+estimatedCost: aCost
+	estimatedCost _ aCost ! !
+
+!Day17 methodsFor: 'accessing' stamp: 'shnarazk 6/2/2022 20:50:43'!
+key 
+^key! !
+
+!Day17 methodsFor: 'accessing' stamp: 'shnarazk 6/2/2022 20:53:55'!
+key: aKey
+  key _ aKey! !
+
+!Day17 methodsFor: 'associating' stamp: 'shnarazk 6/2/2022 23:54:43'!
+neighbars
+	| next masks locations |
+	next _ self nextKey.
+	masks _ #(1 2 3 4 ) collect: [ :each |
+		(next at: each) > $a ].
+	locations _ {0 @ -1. 0 @ 1. -1 @ 0. 1 @ 0} collect: [ :each |
+		state + each ].
+	Transcript show: 'masks: ' , masks asString.
+	Transcript show: 'locations: ' , locations asString.
+	^ (1 to: 4)
+		select: [ :each |
+			(masks at: each) and: [ (0 < (locations at: each) x) & (0 < (locations at: each) y) ]]
+		thenCollect: [ :each |
+			locations at: each ].! !
+
+!Day17 methodsFor: 'associating' stamp: 'shnarazk 6/2/2022 21:37:16'!
+nextKey
+	^ self class hasher hash: key.! !
+
+!Day17 methodsFor: 'initialization' stamp: 'shnarazk 6/2/2022 20:45:43'!
+initialize
+	super initialize.
+	! !
+
+!Day17 class methodsFor: 'instance creation' stamp: 'shnarazk 6/2/2022 20:52:42'!
+newAt: aPoint withKey: aKey
+| instance |
+instance _ self new.
+instance at: aPoint;
+key: aKey.
+^instance ! !
+
+!Day17 class methodsFor: 'initialization' stamp: 'shnarazk 6/2/2022 20:46:12'!
+initialize
+	super initialize.
+	self setHasher.
+	Visit _ Dictionary new.
+	ToVisit _ Heap new.! !
+
+!Day17 class methodsFor: 'initialization' stamp: 'shnarazk 6/2/2022 20:06:26'!
+setHasher
+Hasher _ RustCaller1 new.! !
+
+!Day17 class methodsFor: 'accessing' stamp: 'shnarazk 6/2/2022 20:05:23'!
+hasher
+^Hasher! !
+
+!Day17 class methodsFor: 'accessing' stamp: 'shnarazk 6/2/2022 20:05:44'!
+hasher: aHasher
+	Hasher _ aHasher ! !
+
+!Day17 class methodsFor: 'methods' stamp: 'shnarazk 6/2/2022 21:40:33'!
+example
+self initialize .
+	Input _ 'hijkl'.
+	^ self solve.! !
+
+!Day17 class methodsFor: 'methods' stamp: 'shnarazk 6/2/2022 21:20:19'!
+part1
+	Input _ 'gdjjyniy'.! !
+
+!Day17 class methodsFor: 'methods' stamp: 'shnarazk 6/2/2022 23:35:27'!
+solve
+	| start |
+	start _ self new key: Input.
+	start at: 1@1.
+	^ start neighbars.! !
+
 !Day12 methodsFor: 'evaluating' stamp: 'shnarazk 5/27/2022 23:20:17'!
 execute: anInstruction
 	| opCode |
@@ -870,3 +982,4 @@ part2
 	myComputer load: code.
 	myComputer at: #c put: 1.
 	myComputer start.! !
+Day17 initialize!

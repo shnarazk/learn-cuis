@@ -1,6 +1,7 @@
-'From Cuis 6.0 [latest update: #5202] on 2 June 2022 at 1:55:44 am'!
+'From Cuis 6.0 [latest update: #5213] on 2 June 2022 at 9:54:48 pm'!
 'Description '!
-!provides: 'RustBridge' 1 13!
+!provides: 'RustBridge' 1 18!
+!requires: 'FFI' 1 34 nil!
 SystemOrganization addCategory: 'RustBridge'!
 
 
@@ -12,16 +13,6 @@ ExternalStructure subclass: #B128
 	category: 'RustBridge'!
 !classDefinition: 'B128 class' category: 'RustBridge'!
 B128 class
-	instanceVariableNames: ''!
-
-!classDefinition: #B80 category: 'RustBridge'!
-ExternalStructure subclass: #B80
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'RustBridge'!
-!classDefinition: 'B80 class' category: 'RustBridge'!
-B80 class
 	instanceVariableNames: ''!
 
 !classDefinition: #RustCaller1 category: 'RustBridge'!
@@ -461,145 +452,48 @@ initialize
 	super initialize.
 	self defineFields.! !
 
-!B80 methodsFor: 'accessing'!
-a0
-	"This method was automatically generated. See B80 class>>fields."
-	<generated>
-	^handle unsignedByteAt: 1! !
-
-!B80 methodsFor: 'accessing'!
-a0: anObject
-	"This method was automatically generated. See B80 class>>fields."
-	<generated>
-	handle unsignedByteAt: 1 put: anObject! !
-
-!B80 methodsFor: 'accessing'!
-b1
-	"This method was automatically generated. See B80 class>>fields."
-	<generated>
-	^handle unsignedByteAt: 2! !
-
-!B80 methodsFor: 'accessing'!
-b1: anObject
-	"This method was automatically generated. See B80 class>>fields."
-	<generated>
-	handle unsignedByteAt: 2 put: anObject! !
-
-!B80 methodsFor: 'accessing'!
-b2
-	"This method was automatically generated. See B80 class>>fields."
-	<generated>
-	^handle unsignedByteAt: 3! !
-
-!B80 methodsFor: 'accessing'!
-b2: anObject
-	"This method was automatically generated. See B80 class>>fields."
-	<generated>
-	handle unsignedByteAt: 3 put: anObject! !
-
-!B80 methodsFor: 'accessing'!
-b3
-	"This method was automatically generated. See B80 class>>fields."
-	<generated>
-	^handle unsignedByteAt: 4! !
-
-!B80 methodsFor: 'accessing'!
-b3: anObject
-	"This method was automatically generated. See B80 class>>fields."
-	<generated>
-	handle unsignedByteAt: 4 put: anObject! !
-
-!B80 methodsFor: 'accessing'!
-b4
-	"This method was automatically generated. See B80 class>>fields."
-	<generated>
-	^handle unsignedByteAt: 5! !
-
-!B80 methodsFor: 'accessing'!
-b4: anObject
-	"This method was automatically generated. See B80 class>>fields."
-	<generated>
-	handle unsignedByteAt: 5 put: anObject! !
-
-!B80 methodsFor: 'accessing'!
-b5
-	"This method was automatically generated. See B80 class>>fields."
-	<generated>
-	^handle unsignedByteAt: 6! !
-
-!B80 methodsFor: 'accessing'!
-b5: anObject
-	"This method was automatically generated. See B80 class>>fields."
-	<generated>
-	handle unsignedByteAt: 6 put: anObject! !
-
-!B80 methodsFor: 'accessing'!
-b6
-	"This method was automatically generated. See B80 class>>fields."
-	<generated>
-	^handle unsignedByteAt: 7! !
-
-!B80 methodsFor: 'accessing'!
-b6: anObject
-	"This method was automatically generated. See B80 class>>fields."
-	<generated>
-	handle unsignedByteAt: 7 put: anObject! !
-
-!B80 methodsFor: 'accessing'!
-b7
-	"This method was automatically generated. See B80 class>>fields."
-	<generated>
-	^handle unsignedByteAt: 8! !
-
-!B80 methodsFor: 'accessing'!
-b7: anObject
-	"This method was automatically generated. See B80 class>>fields."
-	<generated>
-	handle unsignedByteAt: 8 put: anObject! !
-
-!B80 methodsFor: 'accessing'!
-b8
-	"This method was automatically generated. See B80 class>>fields."
-	<generated>
-	^handle unsignedByteAt: 9! !
-
-!B80 methodsFor: 'accessing'!
-b8: anObject
-	"This method was automatically generated. See B80 class>>fields."
-	<generated>
-	handle unsignedByteAt: 9 put: anObject! !
-
-!B80 methodsFor: 'accessing'!
-b9
-	"This method was automatically generated. See B80 class>>fields."
-	<generated>
-	^handle unsignedByteAt: 10! !
-
-!B80 methodsFor: 'accessing'!
-b9: anObject
-	"This method was automatically generated. See B80 class>>fields."
-	<generated>
-	handle unsignedByteAt: 10 put: anObject! !
-
-!B80 class methodsFor: 'as yet unclassified' stamp: 'shnarazk 6/1/2022 21:15:06'!
-fields
-	^ #(
-		#(#a0 'byte' )
-		#(#b1 'byte' )
-		#(#b2 'byte' )
-		#(#b3 'byte' )
-		#(#b4 'byte' )
-		#(#b5 'byte' )
-		#(#b6 'byte' )
-		#(#b7 'byte' )
-		#(#b8 'byte' )
-		#(#b9 'byte' )
-	).! !
-
-!B80 class methodsFor: 'as yet unclassified' stamp: 'shnarazk 6/1/2022 21:13:53'!
-initialize
-super initialize .
-self defineFields .! !
+!RustCaller1 methodsFor: 'evaluating' stamp: 'shnarazk 6/2/2022 21:54:42'!
+hash: aString
+	"Note: the callee accepts only alphanumeric characters."
+	| key val |
+	val _ aString , '---------------------------------'.
+	key _ B128 new.
+	key b0: (val at: 1) asciiValue.
+	key b1: (val at: 2) asciiValue.
+	key b2: (val at: 3) asciiValue.
+	key b3: (val at: 4) asciiValue.
+	key b4: (val at: 5) asciiValue.
+	key b5: (val at: 6) asciiValue.
+	key b6: (val at: 7) asciiValue.
+	key b7: (val at: 8) asciiValue.
+	key b8: (val at: 9) asciiValue.
+	key b9: (val at: 10) asciiValue.
+	key b10: (val at: 11) asciiValue.
+	key b11: (val at: 12) asciiValue.
+	key b12: (val at: 13) asciiValue.
+	key b13: (val at: 14) asciiValue.
+	key b14: (val at: 15) asciiValue.
+	key b15: (val at: 16) asciiValue.
+	key b16: (val at: 17) asciiValue.
+	key b17: (val at: 18) asciiValue.
+	key b18: (val at: 19) asciiValue.
+	key b19: (val at: 20) asciiValue.
+	key b20: (val at: 21) asciiValue.
+	key b21: (val at: 22) asciiValue.
+	key b22: (val at: 23) asciiValue.
+	key b23: (val at: 24) asciiValue.
+	key b24: (val at: 25) asciiValue.
+	key b25: (val at: 26) asciiValue.
+	key b26: (val at: 27) asciiValue.
+	key b27: (val at: 28) asciiValue.
+	key b28: (val at: 29) asciiValue.
+	key b29: (val at: 30) asciiValue.
+	key b20: (val at: 21) asciiValue.
+	key b31: (val at: 32) asciiValue.
+	self hashMD5: key.
+	^ '' join:
+		(key getHandle asArray collect: [ :each |
+			Character asciiValue: each ]).! !
 
 !RustCaller1 methodsFor: 'testing' stamp: 'shnarazk 6/2/2022 01:30:10'!
 hashMD5: arg
@@ -618,18 +512,6 @@ test2: aString
 	^ self externalCallFailed."
 	^ self.! !
 
-!RustCaller1 methodsFor: 'testing' stamp: 'shnarazk 6/1/2022 21:23:43'!
-test3
-	"I will return #(1 2 3 0) for now."
-	| tmp |
-	tmp _ self test3: B80 new.
-	^ {tmp getHandle at: 1. tmp getHandle at: 2. tmp getHandle at: 3. tmp getHandle at: 4}.! !
-
-!RustCaller1 methodsFor: 'testing' stamp: 'shnarazk 6/1/2022 21:19:30'!
-test3: arg
-	<cdecl: B80* 'rustfunc3' (B80*) module: '/Users/nash/.cargo/shared-target/release/librust_ffi_demo.dylib'>
-	^ self externalCallFailed.! !
-
 !RustCaller1 methodsFor: 'testing' stamp: 'shnarazk 6/2/2022 01:55:18'!
 testMd5
 	| key |
@@ -642,4 +524,3 @@ testMd5
 	^ '' join: (key getHandle asArray collect: [ :each |
 		Character asciiValue: each ])! !
 B128 initialize!
-B80 initialize!

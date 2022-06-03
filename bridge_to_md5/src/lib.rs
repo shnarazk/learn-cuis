@@ -12,7 +12,9 @@ pub unsafe extern "C" fn hash(buffer: &mut [u8; 32]) -> u32 {
     let trimmed = std::str::from_utf8(buffer)
         .unwrap()
         .chars()
-        .filter(|c| ('0' <= *c && *c <= '9') || ('a' <= *c && *c <= 'z'))
+        .filter(|c| {
+            ('0' <= *c && *c <= '9') || ('a' <= *c && *c <= 'z') || ('A' <= *c && *c <= 'Z')
+        })
         .collect::<String>();
     let mut hasher = Md5::new();
     hasher.update(trimmed);

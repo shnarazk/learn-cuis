@@ -1,6 +1,6 @@
-'From Cuis 6.0 [latest update: #5213] on 3 June 2022 at 9:08:50 am'!
+'From Cuis 6.0 [latest update: #5213] on 3 June 2022 at 8:22:07 pm'!
 'Description '!
-!provides: 'AdventOfCode2016' 1 17!
+!provides: 'AdventOfCode2016' 1 24!
 !requires: 'RustBridge' 1 13 nil!
 SystemOrganization addCategory: 'AdventOfCode2016-Day11'!
 SystemOrganization addCategory: 'AdventOfCode2016-Day12'!
@@ -51,7 +51,7 @@ Day16 class
 !classDefinition: #Day17 category: 'AdventOfCode2016'!
 TestCase subclass: #Day17
 	instanceVariableNames: 'location key'
-	classVariableNames: 'Hasher Input ToVisit Visit'
+	classVariableNames: 'FoundGoal Hasher Input ToVisit Visit'
 	poolDictionaries: ''
 	category: 'AdventOfCode2016'!
 !classDefinition: 'Day17 class' category: 'AdventOfCode2016'!
@@ -761,19 +761,55 @@ location
 location: aPoint
 	location _ aPoint ! !
 
-!Day17 methodsFor: 'associating' stamp: 'shnarazk 6/3/2022 09:02:58'!
+!Day17 methodsFor: 'associating' stamp: 'shnarazk 6/3/2022 20:01:49'!
 neighbars
 	| next masks locations |
+	4 @ 4 = location ifTrue: [
+		self class foundGoal: key.
+		^ {} ].
 	next _ self nextKey.
 	masks _ #(1 2 3 4 ) collect: [ :each |
 		(next at: each) > $a ].
 	locations _ {0 @ -1. 0 @ 1. -1 @ 0. 1 @ 0} collect: [ :each |
 		location + each ].
-	Transcript show: 'masks: ' , masks asString.
-	Transcript show: 'locations: ' , locations asString.
+	"Transcript show: 'masks: ' , masks asString.
+	Transcript show: 'locations: ' , locations asString."
 	^ (1 to: 4)
-		select: [ :each | 
-			(masks at: each) and: [ (locations at: each) between: 1@1 and: 4@4 ]]
+		select: [ :each |
+			(masks at: each) and: [
+				(locations at: each)
+					between: 1 @ 1
+					and: 4 @ 4 ]]
+		thenCollect: [ :each | | neighbar |
+			neighbar _ self class new.
+			neighbar
+				location: (locations at: each);
+				key:
+					key ,
+						({'U'. 'D'. 'L'. 'R'} at: each).
+			"Transcript show: 'New: ' , neighbar asString."
+			neighbar ].! !
+
+!Day17 methodsFor: 'associating' stamp: 'shnarazk 6/3/2022 20:12:31'!
+neighbars: aBlock
+	| next masks locations |
+	4 @ 4 = location ifTrue: [
+		"self class foundGoal: key."
+		aBlock value: key.
+		^ {} ].
+	next _ self nextKey.
+	masks _ #(1 2 3 4 ) collect: [ :each |
+		(next at: each) > $a ].
+	locations _ {0 @ -1. 0 @ 1. -1 @ 0. 1 @ 0} collect: [ :each |
+		location + each ].
+	"Transcript show: 'masks: ' , masks asString.
+	Transcript show: 'locations: ' , locations asString."
+	^ (1 to: 4)
+		select: [ :each |
+			(masks at: each) and: [
+				(locations at: each)
+					between: 1 @ 1
+					and: 4 @ 4 ]]
 		thenCollect: [ :each | | neighbar |
 			neighbar _ self class new.
 			neighbar
@@ -808,6 +844,14 @@ initialize
 setHasher
 Hasher _ RustCaller1 new.! !
 
+!Day17 class methodsFor: 'accessing' stamp: 'shnarazk 6/3/2022 16:59:17'!
+foundGoal
+^FoundGoal ! !
+
+!Day17 class methodsFor: 'accessing' stamp: 'shnarazk 6/3/2022 17:00:02'!
+foundGoal: aNumber
+	FoundGoal _ aNumber .! !
+
 !Day17 class methodsFor: 'accessing' stamp: 'shnarazk 6/2/2022 20:05:23'!
 hasher
 ^Hasher! !
@@ -816,23 +860,69 @@ hasher
 hasher: aHasher
 	Hasher _ aHasher ! !
 
-!Day17 class methodsFor: 'methods' stamp: 'shnarazk 6/2/2022 21:40:33'!
+!Day17 class methodsFor: 'methods' stamp: 'shnarazk 6/3/2022 20:02:55'!
 example
-self initialize .
-	Input _ 'hijkl'.
+	self initialize.
+	"Input _ 'hijkl'."
+	"Input _ 'ihgpwlah'."
+	Input _ 'kglvqrro'.
 	^ self solve.! !
 
-!Day17 class methodsFor: 'methods' stamp: 'shnarazk 6/2/2022 21:20:19'!
+!Day17 class methodsFor: 'methods' stamp: 'shnarazk 6/3/2022 20:07:44'!
 part1
-	Input _ 'gdjjyniy'.! !
+	self initialize.
+	Input _ 'gdjjyniy'.
+	^ self solve.! !
 
-!Day17 class methodsFor: 'methods' stamp: 'shnarazk 6/3/2022 01:24:59'!
+!Day17 class methodsFor: 'methods' stamp: 'shnarazk 6/3/2022 20:16:25'!
+part2
+	self initialize.
+	Input _ 'gdjjyniy'.
+	^ self solve2.! !
+
+!Day17 class methodsFor: 'methods' stamp: 'shnarazk 6/3/2022 20:14:42'!
 solve
-	| start |
+	| start stage |
+	FoundGoal _ nil.
 	start _ self new.
-	start key: Input;
-	location: 1 @ 1.
-	^ start neighbars.! !
+	start
+		key: Input;
+		location: 1 @ 1.
+	stage _ Set new.
+	stage add: start.
+	[ FoundGoal isNil & stage isEmpty not ] whileTrue: [
+		Transcript show: stage.
+		stage _ stage
+			inject: Set new
+			into: [ :aSet :each |
+				Transcript show: each key.
+				(each neighbars: [ :key |
+					FoundGoal _ key ]) do: [ :next |
+					aSet add: next ].
+				aSet ]].
+	^ FoundGoal.! !
+
+!Day17 class methodsFor: 'methods' stamp: 'shnarazk 6/3/2022 20:19:02'!
+solve2
+	| start stage |
+	FoundGoal _ 0.
+	start _ self new.
+	start
+		key: Input;
+		location: 1 @ 1.
+	stage _ Set new.
+	stage add: start.
+	[ stage isEmpty not ] whileTrue: [
+		Transcript show: FoundGoal  asString .
+		stage _ stage
+			inject: Set new
+			into: [ :aSet :each |
+				"Transcript show: each key."
+				(each neighbars: [ :key |
+					FoundGoal _ FoundGoal max: key size ]) do: [ :next |
+					aSet add: next ].
+				aSet ]].
+	^ FoundGoal.! !
 
 !Day12 methodsFor: 'evaluating' stamp: 'shnarazk 5/27/2022 23:20:17'!
 execute: anInstruction

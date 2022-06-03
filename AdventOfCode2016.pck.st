@@ -1,6 +1,6 @@
-'From Cuis 6.0 [latest update: #5213] on 2 June 2022 at 11:55:02 pm'!
+'From Cuis 6.0 [latest update: #5213] on 3 June 2022 at 9:08:50 am'!
 'Description '!
-!provides: 'AdventOfCode2016' 1 15!
+!provides: 'AdventOfCode2016' 1 17!
 !requires: 'RustBridge' 1 13 nil!
 SystemOrganization addCategory: 'AdventOfCode2016-Day11'!
 SystemOrganization addCategory: 'AdventOfCode2016-Day12'!
@@ -50,7 +50,7 @@ Day16 class
 
 !classDefinition: #Day17 category: 'AdventOfCode2016'!
 TestCase subclass: #Day17
-	instanceVariableNames: 'currestCost estimatedCost state key'
+	instanceVariableNames: 'location key'
 	classVariableNames: 'Hasher Input ToVisit Visit'
 	poolDictionaries: ''
 	category: 'AdventOfCode2016'!
@@ -741,29 +741,9 @@ part2
 	Transcript show: 'Given: ' , (solver toString: data).
 	^ solver expand: data.! !
 
-!Day17 methodsFor: 'accessing' stamp: 'shnarazk 6/2/2022 20:53:22'!
-at
-	^state! !
-
-!Day17 methodsFor: 'accessing' stamp: 'shnarazk 6/2/2022 20:53:08'!
-at: aPoint
- state _ aPoint ! !
-
-!Day17 methodsFor: 'accessing' stamp: 'shnarazk 6/2/2022 20:47:29'!
-currentCost
-^currestCost ! !
-
-!Day17 methodsFor: 'accessing' stamp: 'shnarazk 6/2/2022 20:48:50'!
-currentCost: aCost
-	currestCost _ aCost ! !
-
-!Day17 methodsFor: 'accessing' stamp: 'shnarazk 6/2/2022 20:48:21'!
-estimatedCost
-	^estimatedCost ! !
-
-!Day17 methodsFor: 'accessing' stamp: 'shnarazk 6/2/2022 20:48:35'!
-estimatedCost: aCost
-	estimatedCost _ aCost ! !
+!Day17 methodsFor: 'accessing' stamp: 'shnarazk 6/3/2022 01:19:55'!
+cost
+^key size! !
 
 !Day17 methodsFor: 'accessing' stamp: 'shnarazk 6/2/2022 20:50:43'!
 key 
@@ -773,38 +753,49 @@ key
 key: aKey
   key _ aKey! !
 
-!Day17 methodsFor: 'associating' stamp: 'shnarazk 6/2/2022 23:54:43'!
+!Day17 methodsFor: 'accessing' stamp: 'shnarazk 6/3/2022 01:21:12'!
+location
+	^ location ! !
+
+!Day17 methodsFor: 'accessing' stamp: 'shnarazk 6/3/2022 01:21:32'!
+location: aPoint
+	location _ aPoint ! !
+
+!Day17 methodsFor: 'associating' stamp: 'shnarazk 6/3/2022 09:02:58'!
 neighbars
 	| next masks locations |
 	next _ self nextKey.
 	masks _ #(1 2 3 4 ) collect: [ :each |
 		(next at: each) > $a ].
 	locations _ {0 @ -1. 0 @ 1. -1 @ 0. 1 @ 0} collect: [ :each |
-		state + each ].
+		location + each ].
 	Transcript show: 'masks: ' , masks asString.
 	Transcript show: 'locations: ' , locations asString.
 	^ (1 to: 4)
-		select: [ :each |
-			(masks at: each) and: [ (0 < (locations at: each) x) & (0 < (locations at: each) y) ]]
-		thenCollect: [ :each |
-			locations at: each ].! !
+		select: [ :each | 
+			(masks at: each) and: [ (locations at: each) between: 1@1 and: 4@4 ]]
+		thenCollect: [ :each | | neighbar |
+			neighbar _ self class new.
+			neighbar
+				location: (locations at: each);
+				key:
+					key ,
+						({'U'. 'D'. 'L'. 'R'} at: each).
+			"Transcript show: 'New: ' , neighbar asString."
+			neighbar ].! !
 
 !Day17 methodsFor: 'associating' stamp: 'shnarazk 6/2/2022 21:37:16'!
 nextKey
 	^ self class hasher hash: key.! !
 
-!Day17 methodsFor: 'initialization' stamp: 'shnarazk 6/2/2022 20:45:43'!
-initialize
-	super initialize.
-	! !
-
-!Day17 class methodsFor: 'instance creation' stamp: 'shnarazk 6/2/2022 20:52:42'!
+!Day17 class methodsFor: 'instance creation' stamp: 'shnarazk 6/3/2022 01:24:16'!
 newAt: aPoint withKey: aKey
-| instance |
-instance _ self new.
-instance at: aPoint;
-key: aKey.
-^instance ! !
+	| instance |
+	instance _ self new.
+	instance
+		location: aPoint;
+		key: aKey.
+	^ instance.! !
 
 !Day17 class methodsFor: 'initialization' stamp: 'shnarazk 6/2/2022 20:46:12'!
 initialize
@@ -835,11 +826,12 @@ self initialize .
 part1
 	Input _ 'gdjjyniy'.! !
 
-!Day17 class methodsFor: 'methods' stamp: 'shnarazk 6/2/2022 23:35:27'!
+!Day17 class methodsFor: 'methods' stamp: 'shnarazk 6/3/2022 01:24:59'!
 solve
 	| start |
-	start _ self new key: Input.
-	start at: 1@1.
+	start _ self new.
+	start key: Input;
+	location: 1 @ 1.
 	^ start neighbars.! !
 
 !Day12 methodsFor: 'evaluating' stamp: 'shnarazk 5/27/2022 23:20:17'!

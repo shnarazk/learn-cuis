@@ -1,6 +1,6 @@
-'From Cuis 6.0 [latest update: #5213] on 4 June 2022 at 2:19:03 pm'!
+'From Cuis 6.0 [latest update: #5213] on 4 June 2022 at 3:06:50 pm'!
 'Description '!
-!provides: 'AdventOfCode2016' 1 26!
+!provides: 'AdventOfCode2016' 1 29!
 !requires: 'RustBridge' 1 13 nil!
 SystemOrganization addCategory: 'AdventOfCode2016-Day11'!
 SystemOrganization addCategory: 'AdventOfCode2016-Day12'!
@@ -848,10 +848,10 @@ part1
 	Input _ 'gdjjyniy'.
 	^ self solve.! !
 
-!Day17 class methodsFor: 'methods' stamp: 'shnarazk 6/3/2022 20:16:25'!
+!Day17 class methodsFor: 'methods' stamp: 'shnarazk 6/4/2022 15:06:24'!
 part2
 	self initialize.
-	Input _ 'gdjjyniy'.
+	Input _ 'gdjjyniy' "'ihgpwlah'".
 	^ self solve2.! !
 
 !Day17 class methodsFor: 'methods' stamp: 'shnarazk 6/4/2022 13:24:37'!
@@ -874,7 +874,7 @@ solve
 				aSet ]].
 	^ FoundGoal.! !
 
-!Day17 class methodsFor: 'methods' stamp: 'shnarazk 6/4/2022 13:16:01'!
+!Day17 class methodsFor: 'methods' stamp: 'shnarazk 6/4/2022 15:01:27'!
 solve2
 	| start stage |
 	FoundGoal _ 0.
@@ -883,7 +883,7 @@ solve2
 	stage _ Set new.
 	stage add: start.
 	[ stage isEmpty not ] whileTrue: [
-		Transcript show: FoundGoal asString.
+		"Transcript show: FoundGoal asString."
 		stage _ stage
 			inject: Set new
 			into: [ :aSet :each |

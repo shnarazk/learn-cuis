@@ -1,6 +1,6 @@
-'From Cuis 6.0 [latest update: #5213] on 4 June 2022 at 10:19:51 am'!
+'From Cuis 6.0 [latest update: #5213] on 4 June 2022 at 3:05:34 pm'!
 'Description '!
-!provides: 'RustBridge' 1 20!
+!provides: 'RustBridge' 1 23!
 !requires: 'FFI' 1 34 nil!
 SystemOrganization addCategory: 'RustBridge'!
 
@@ -462,7 +462,7 @@ finalizeAndReset
 		(key getHandle asArray collect: [ :each |
 			Character asciiValue: each ]).! !
 
-!RustCaller1 methodsFor: 'evaluating' stamp: 'shnarazk 6/4/2022 10:19:43'!
+!RustCaller1 methodsFor: 'evaluating' stamp: 'shnarazk 6/4/2022 15:05:29'!
 hash: aString
 	"Note: the callee accepts only alphanumeric characters."
 	| input |
@@ -471,7 +471,7 @@ hash: aString
 		self pushInputSegment: ( input copyFrom: 1 to: 32).
 		input  _ input copyFrom: 33 to: input size.
 	].
-	self pushInputSegment: input .
+	self pushInputSegment: input, '----------_----------_----------' .
 	^ self finalizeAndReset.
 ! !
 
@@ -518,11 +518,11 @@ hashString32: aString
 		(key getHandle asArray collect: [ :each |
 			Character asciiValue: each ]).! !
 
-!RustCaller1 methodsFor: 'evaluating' stamp: 'shnarazk 6/4/2022 10:14:11'!
-pushInputSegment: aString
+!RustCaller1 methodsFor: 'evaluating' stamp: 'shnarazk 6/4/2022 15:03:42'!
+pushInputSegment: val
 	"Note: the callee accepts only alphanumeric characters."
-	| key val |
-	val _ aString , '---------------------------------'.
+	| key |
+	val size < 32 ifTrue: [ self error: 'Invalid argument' ].
 	key _ B128 new.
 	key b0: (val at: 1) asciiValue.
 	key b1: (val at: 2) asciiValue.
@@ -554,7 +554,7 @@ pushInputSegment: aString
 	key b27: (val at: 28) asciiValue.
 	key b28: (val at: 29) asciiValue.
 	key b29: (val at: 30) asciiValue.
-	key b20: (val at: 21) asciiValue.
+	key b30: (val at: 31) asciiValue.
 	key b31: (val at: 32) asciiValue.
 	^self pushDataSegmentMD5: key.
 	! !

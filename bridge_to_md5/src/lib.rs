@@ -83,7 +83,7 @@ mod tests {
         b[5] = b'-';
         unsafe {
             hash(&mut b);
-            println!("{}", std::str::from_utf8_unchecked(&b));
+            // println!("{}", std::str::from_utf8_unchecked(&b));
             assert_eq!(
                 std::str::from_utf8_unchecked(&b),
                 "577571be4de9dcce85a041ba0410f29f"
@@ -101,7 +101,7 @@ mod tests {
         b[5] = b'-';
         unsafe {
             hash(&mut b);
-            println!("{}", std::str::from_utf8_unchecked(&b));
+            // println!("{}", std::str::from_utf8_unchecked(&b));
             assert_eq!(
                 std::str::from_utf8_unchecked(&b),
                 "ced9fc52441937264674bca3f4ba7588"
@@ -119,15 +119,24 @@ mod tests {
         b[5] = b'f';
         b[6] = b'g';
         b[7] = b'h';
+        b[8] = b'h';
+        b[9] = b'h';
+        b[10] = b'i';
+        b[11] = b'j';
+        b[12] = b'k';
+        b[13] = b'l';
+        b[14] = b'm';
+        b[15] = b'n';
         unsafe {
             hasher_push_data(&b);
             hasher_push_data(&b);
             hasher_push_data(&b);
+            dbg!(&BUFFER.lock());
             hasher_finalize_and_reset(&mut b);
             println!("{}", std::str::from_utf8_unchecked(&b));
             assert_eq!(
                 std::str::from_utf8_unchecked(&b),
-                "f613a6f694b6dc12da598a07a82ba666"
+                "54e5d32b5da897a3a1f1855139f1675f"
             );
         }
         // try again

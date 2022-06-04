@@ -1,6 +1,6 @@
-'From Cuis 6.0 [latest update: #5213] on 3 June 2022 at 8:22:07 pm'!
+'From Cuis 6.0 [latest update: #5213] on 4 June 2022 at 10:23:15 am'!
 'Description '!
-!provides: 'AdventOfCode2016' 1 24!
+!provides: 'AdventOfCode2016' 1 25!
 !requires: 'RustBridge' 1 13 nil!
 SystemOrganization addCategory: 'AdventOfCode2016-Day11'!
 SystemOrganization addCategory: 'AdventOfCode2016-Day12'!
@@ -902,7 +902,7 @@ solve
 				aSet ]].
 	^ FoundGoal.! !
 
-!Day17 class methodsFor: 'methods' stamp: 'shnarazk 6/3/2022 20:19:02'!
+!Day17 class methodsFor: 'methods' stamp: 'shnarazk 6/4/2022 10:22:47'!
 solve2
 	| start stage |
 	FoundGoal _ 0.
@@ -919,7 +919,7 @@ solve2
 			into: [ :aSet :each |
 				"Transcript show: each key."
 				(each neighbars: [ :key |
-					FoundGoal _ FoundGoal max: key size ]) do: [ :next |
+					FoundGoal _ FoundGoal max: key size - Input size]) do: [ :next |
 					aSet add: next ].
 				aSet ]].
 	^ FoundGoal.! !

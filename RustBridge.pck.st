@@ -1,6 +1,6 @@
-'From Cuis 6.0 [latest update: #5213] on 2 June 2022 at 9:54:48 pm'!
+'From Cuis 6.0 [latest update: #5213] on 4 June 2022 at 10:19:51 am'!
 'Description '!
-!provides: 'RustBridge' 1 18!
+!provides: 'RustBridge' 1 20!
 !requires: 'FFI' 1 34 nil!
 SystemOrganization addCategory: 'RustBridge'!
 
@@ -452,8 +452,31 @@ initialize
 	super initialize.
 	self defineFields.! !
 
-!RustCaller1 methodsFor: 'evaluating' stamp: 'shnarazk 6/2/2022 21:54:42'!
+!RustCaller1 methodsFor: 'evaluating' stamp: 'shnarazk 6/4/2022 10:07:51'!
+finalizeAndReset
+	"Note: the callee accepts only alphanumeric characters."
+	| key |
+	key _ B128 new.
+	self finalizeAndResetMD5: key.
+	^ '' join:
+		(key getHandle asArray collect: [ :each |
+			Character asciiValue: each ]).! !
+
+!RustCaller1 methodsFor: 'evaluating' stamp: 'shnarazk 6/4/2022 10:19:43'!
 hash: aString
+	"Note: the callee accepts only alphanumeric characters."
+	| input |
+	input _ aString .
+	[ 32 < input size ] whileTrue: [
+		self pushInputSegment: ( input copyFrom: 1 to: 32).
+		input  _ input copyFrom: 33 to: input size.
+	].
+	self pushInputSegment: input .
+	^ self finalizeAndReset.
+! !
+
+!RustCaller1 methodsFor: 'evaluating' stamp: 'shnarazk 6/4/2022 09:54:22'!
+hashString32: aString
 	"Note: the callee accepts only alphanumeric characters."
 	| key val |
 	val _ aString , '---------------------------------'.
@@ -495,10 +518,46 @@ hash: aString
 		(key getHandle asArray collect: [ :each |
 			Character asciiValue: each ]).! !
 
-!RustCaller1 methodsFor: 'testing' stamp: 'shnarazk 6/2/2022 01:30:10'!
-hashMD5: arg
-	<cdecl: ulong 'hash' (B128*) module: '/Users/nash/.cargo/shared-target/release/libbridge_to_md5.dylib'>
-	^ self externalCallFailed.! !
+!RustCaller1 methodsFor: 'evaluating' stamp: 'shnarazk 6/4/2022 10:14:11'!
+pushInputSegment: aString
+	"Note: the callee accepts only alphanumeric characters."
+	| key val |
+	val _ aString , '---------------------------------'.
+	key _ B128 new.
+	key b0: (val at: 1) asciiValue.
+	key b1: (val at: 2) asciiValue.
+	key b2: (val at: 3) asciiValue.
+	key b3: (val at: 4) asciiValue.
+	key b4: (val at: 5) asciiValue.
+	key b5: (val at: 6) asciiValue.
+	key b6: (val at: 7) asciiValue.
+	key b7: (val at: 8) asciiValue.
+	key b8: (val at: 9) asciiValue.
+	key b9: (val at: 10) asciiValue.
+	key b10: (val at: 11) asciiValue.
+	key b11: (val at: 12) asciiValue.
+	key b12: (val at: 13) asciiValue.
+	key b13: (val at: 14) asciiValue.
+	key b14: (val at: 15) asciiValue.
+	key b15: (val at: 16) asciiValue.
+	key b16: (val at: 17) asciiValue.
+	key b17: (val at: 18) asciiValue.
+	key b18: (val at: 19) asciiValue.
+	key b19: (val at: 20) asciiValue.
+	key b20: (val at: 21) asciiValue.
+	key b21: (val at: 22) asciiValue.
+	key b22: (val at: 23) asciiValue.
+	key b23: (val at: 24) asciiValue.
+	key b24: (val at: 25) asciiValue.
+	key b25: (val at: 26) asciiValue.
+	key b26: (val at: 27) asciiValue.
+	key b27: (val at: 28) asciiValue.
+	key b28: (val at: 29) asciiValue.
+	key b29: (val at: 30) asciiValue.
+	key b20: (val at: 21) asciiValue.
+	key b31: (val at: 32) asciiValue.
+	^self pushDataSegmentMD5: key.
+	! !
 
 !RustCaller1 methodsFor: 'testing' stamp: 'shnarazk 5/31/2022 08:44:17'!
 test1: aFloat
@@ -523,4 +582,19 @@ testMd5
 	self hashMD5: key.
 	^ '' join: (key getHandle asArray collect: [ :each |
 		Character asciiValue: each ])! !
+
+!RustCaller1 methodsFor: 'converting' stamp: 'shnarazk 6/4/2022 09:52:25'!
+finalizeAndResetMD5: arg
+	<cdecl: ulong 'hasher_finalize_and_reset' (B128*) module: '/Users/nash/.cargo/shared-target/release/libbridge_to_md5.dylib'>
+	^ self externalCallFailed.! !
+
+!RustCaller1 methodsFor: 'converting' stamp: 'shnarazk 6/2/2022 01:30:10'!
+hashMD5: arg
+	<cdecl: ulong 'hash' (B128*) module: '/Users/nash/.cargo/shared-target/release/libbridge_to_md5.dylib'>
+	^ self externalCallFailed.! !
+
+!RustCaller1 methodsFor: 'converting' stamp: 'shnarazk 6/4/2022 10:14:11'!
+pushDataSegmentMD5: arg
+	<cdecl: ulong 'hasher_push_data' (B128*) module: '/Users/nash/.cargo/shared-target/release/libbridge_to_md5.dylib'>
+	^ self externalCallFailed.! !
 B128 initialize!

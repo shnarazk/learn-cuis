@@ -1,8 +1,51 @@
-use md5::{Digest, Md5};
+use {
+    md5::{Digest, Md5},
+    once_cell::sync::Lazy,
+    std::sync::Mutex,
+};
+
+static BUFFER: Lazy<Mutex<String>> = Lazy::new(|| Mutex::new(String::new()));
 
 #[repr(C)]
 pub struct B128 {
     s: [u8; 32],
+}
+
+/// # Safety
+/// It's safe.
+#[no_mangle]
+pub unsafe extern "C" fn hasher_push_data(packet: &[u8; 32]) -> u32 {
+    let mut ret: u32 = 0;
+    if let Ok(mut b) = BUFFER.lock() {
+        b.push_str(std::str::from_utf8_unchecked(packet));
+        ret = b.len() as u32;
+    }
+    ret
+}
+
+/// # Safety
+/// It's safe.
+#[no_mangle]
+pub unsafe extern "C" fn hasher_finalize_and_reset(buffer: &mut [u8; 32]) -> u32 {
+    let mut ret: u32 = 0;
+    if let Ok(mut b) = BUFFER.lock() {
+        let trimmed = b
+            .chars()
+            .filter(|c| {
+                ('0' <= *c && *c <= '9') || ('a' <= *c && *c <= 'z') || ('A' <= *c && *c <= 'Z')
+            })
+            .collect::<String>();
+        let mut hasher = Md5::new();
+        ret = trimmed.len() as u32;
+        hasher.update(trimmed);
+        let st = format!("{:x}", hasher.finalize());
+        // assert_eq!(st.chars().count(), 32);
+        for (i, c) in st.chars().enumerate() {
+            buffer[i] = c as u8;
+        }
+        b.clear();
+    }
+    ret
 }
 
 /// # Safety
@@ -62,6 +105,50 @@ mod tests {
             assert_eq!(
                 std::str::from_utf8_unchecked(&b),
                 "ced9fc52441937264674bca3f4ba7588"
+            );
+        }
+    }
+    #[test]
+    fn it_works3() {
+        let mut b = [0; 32];
+        b[0] = b'a';
+        b[1] = b'b';
+        b[2] = b'c';
+        b[3] = b'd';
+        b[4] = b'e';
+        b[5] = b'f';
+        b[6] = b'g';
+        b[7] = b'h';
+        unsafe {
+            hasher_push_data(&b);
+            hasher_push_data(&b);
+            hasher_push_data(&b);
+            hasher_finalize_and_reset(&mut b);
+            println!("{}", std::str::from_utf8_unchecked(&b));
+            assert_eq!(
+                std::str::from_utf8_unchecked(&b),
+                "f613a6f694b6dc12da598a07a82ba666"
+            );
+        }
+        // try again
+        let mut c = [0; 32];
+        c[0] = b'A';
+        c[1] = b'B';
+        c[2] = b'C';
+        c[3] = b'0';
+        c[4] = b'1';
+        c[5] = b'2';
+        c[6] = b'x';
+        c[7] = b'y';
+        unsafe {
+            hasher_push_data(&c);
+            hasher_push_data(&c);
+            hasher_push_data(&c);
+            hasher_finalize_and_reset(&mut c);
+            println!("{}", std::str::from_utf8_unchecked(&c));
+            assert_eq!(
+                std::str::from_utf8_unchecked(&c),
+                "a512d6dfac798e8e563ba4b78f300265"
             );
         }
     }

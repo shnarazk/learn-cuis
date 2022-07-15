@@ -83,16 +83,16 @@ currentCost
 !Day11State methodsFor: 'accessing' stamp: 'shnarazk 5/28/2022 14:40:15'!
 currentCost: aCost
 	| g c |
-	currentCost _ aCost.
+	currentCost := aCost.
 	"And update the estimated cost"
-	g _ 0.
-	c _ 0.
+	g := 0.
+	c := 0.
 	1
 		to: self class kinds
 		do: [ :kind |
-			g _ g + 3 - (self floorOfGenerator: kind).
-			c _ c + 3 - (self floorOfChip: kind) ].
-	estimatedCost _ currentCost + g + (c * 2).! !
+			g := g + 3 - (self floorOfGenerator: kind).
+			c := c + 3 - (self floorOfChip: kind) ].
+	estimatedCost := currentCost + g + (c * 2).! !
 
 !Day11State methodsFor: 'accessing' stamp: 'shnarazk 5/27/2022 09:07:37'!
 estimatedCost
@@ -101,7 +101,7 @@ estimatedCost
 !Day11State methodsFor: 'accessing' stamp: 'shnarazk 5/27/2022 02:03:32'!
 floorOfChip: kind
 	| index |
-	index _ self objectIndexOfChip: kind.
+	index := self objectIndexOfChip: kind.
 	^ self floorOfObject: index.! !
 
 !Day11State methodsFor: 'accessing' stamp: 'shnarazk 5/27/2022 01:37:18'!
@@ -118,35 +118,35 @@ floorOfElevator: aFloor
 !Day11State methodsFor: 'accessing' stamp: 'shnarazk 5/27/2022 02:03:05'!
 floorOfGenerator: kind
 | index |
-	index _ self objectIndexOfGenerator: kind.
+	index := self objectIndexOfGenerator: kind.
 	^ self floorOfObject: index! !
 
 !Day11State methodsFor: 'initialization' stamp: 'shnarazk 5/28/2022 14:39:05'!
 initialize
 	"every instance is initialized as being a start."
 	super initialize.
-	code _ 0.
-	currentCost  _ 0.
-	estimatedCost _ 0.! !
+	code := 0.
+	currentCost := 0.
+	estimatedCost := 0.! !
 
 !Day11State methodsFor: 'initialization' stamp: 'shnarazk 5/25/2022 20:07:00'!
 initializeAs: anIndex
 	self initialize.
-	code _ anIndex.! !
+	code := anIndex.! !
 
 !Day11State methodsFor: 'evaluating' stamp: 'shnarazk 5/28/2022 14:41:41'!
 cost
 	| visit toCheck depth |
-	depth _ 0.
-	visit _ Set new.
-	toCheck _ Heap new.
+	depth := 0.
+	visit := Set new.
+	toCheck := Heap new.
 	toCheck add: self.
 	[ toCheck isEmpty ] whileFalse: [ | state |
-		state _ toCheck removeFirst.
+		state := toCheck removeFirst.
 		state isGoal ifTrue: [ ^ state currentCost ].
 		(visit includes: state code) ifFalse: [
 			visit add: state code.
-			depth _ depth max: state currentCost.
+			depth := depth max: state currentCost.
 			state neighborStates do: [ :each |
 				toCheck add: each ]]].
 	Transcript
@@ -169,7 +169,7 @@ isGoal
 !Day11State methodsFor: 'evaluating' stamp: 'shnarazk 5/28/2022 09:38:51'!
 isSafe
 	self forAllKinds: [ :k | | floor |
-		floor _ self floorOfChip: k.
+		floor := self floorOfChip: k.
 		(self floorOfGenerator: k) = floor ifFalse: [
 			self forAllKinds: [ :i |
 					(self floorOfGenerator: i) = floor ifTrue: [ ^ false ]]]].
@@ -179,13 +179,13 @@ isSafe
 neighborStates
 	"the main logic"
 	| floor result |
-	result _ Set new.
-	floor _ self floorOfElevator.
+	result := Set new.
+	floor := self floorOfElevator.
 	self
 		allObjectPairsOn: floor
 		do: [ :i :j |
 			self adjacentFloors do: [ :f | | newState |
-				newState _ self
+				newState := self
 					moveTo: f
 					with: i
 					and: j.
@@ -200,7 +200,7 @@ neighborStates
 !Day11State methodsFor: 'private' stamp: 'shnarazk 5/27/2022 13:56:55'!
 adjacentFloors
 	| floor |
-	floor _ self floorOfElevator.
+	floor := self floorOfElevator.
 	floor = 0 ifTrue: [ ^ {1} ].
 	floor = 3 ifTrue: [ ^ {2} ].
 	^ {floor - 1 . floor + 1}.! !
@@ -209,7 +209,7 @@ adjacentFloors
 allObjectPairsOn: floor do: aBlock
 	"all but elevator"
 	| objects |
-	objects _ self class numberOfObjects .
+	objects := self class numberOfObjects .
 	2
 		to: objects
 		do: [ :i |
@@ -235,12 +235,12 @@ allObjectsOn: floor do: aBlock
 !Day11State methodsFor: 'private' stamp: 'shnarazk 5/27/2022 11:38:53'!
 floorOfObject: anObject
 	| mask result |
-	mask _ (self class numberOfObjects - anObject) * 2.
-	mask _ 2 << mask.
-	result _ (code bitAnd: mask) > 0
+	mask := (self class numberOfObjects - anObject) * 2.
+	mask := 2 << mask.
+	result := (code bitAnd: mask) > 0
 		ifTrue: [ 2 ]
 		ifFalse: [ 0 ].
-	mask _ mask >> 1.
+	mask := mask >> 1.
 	(code bitAnd: mask) > 0
 		ifTrue: [ ^ result + 1 ]
 		ifFalse: [ ^ result ].! !
@@ -248,18 +248,18 @@ floorOfObject: anObject
 !Day11State methodsFor: 'private' stamp: 'shnarazk 5/27/2022 11:39:03'!
 floorOfObject: anObject to: floor
 	| mask |
-	mask _ self class numberOfObjects - anObject * 2.
-	mask _ 2 << mask.
-	code _ code bitClear: mask.
-	floor > 1 ifTrue: [ code _ code bitOr: mask ].
-	mask _ mask >> 1.
-	code _ code bitClear: mask.
-	floor odd ifTrue: [ code _ code bitOr: mask ].! !
+	mask := self class numberOfObjects - anObject * 2.
+	mask := 2 << mask.
+	code := code bitClear: mask.
+	floor > 1 ifTrue: [ code := code bitOr: mask ].
+	mask := mask >> 1.
+	code := code bitClear: mask.
+	floor odd ifTrue: [ code := code bitOr: mask ].! !
 
 !Day11State methodsFor: 'private' stamp: 'shnarazk 5/28/2022 14:40:50'!
 moveTo: floor with: anObjest and: anotherObject
 	| state |
-	state _ self class new initializeAs: code.
+	state := self class new initializeAs: code.
 	state floorOfElevator: floor.
 	state
 		floorOfObject: anObjest
@@ -283,9 +283,9 @@ objectIndexOfGenerator: k
 !Day11State methodsFor: 'testing' stamp: 'shnarazk 5/28/2022 09:24:10'!
 setUp
 	self class setKinds: 2.
-	aStart _ self class new.
-	aGoal _ self class new initializeAs: 1023.
-	example _ self class represents:
+	aStart := self class new.
+	aGoal := self class new initializeAs: 1023.
+	example := self class represents:
 		{1. 0. 2. 0}.! !
 
 !Day11State methodsFor: 'testing' stamp: 'shnarazk 5/28/2022 09:28:07'!
@@ -403,30 +403,30 @@ numberOfObjects
 
 !Day11State class methodsFor: 'accessing' stamp: 'shnarazk 5/27/2022 11:52:23'!
 setKinds: k
-	Kinds _ k.
+	Kinds := k.
 	"Generator and Microchip, plus elevator"
-	Width _ k * 2 + 1.
-	NumberOfObjects _ k * 2 + 1.
-	Goal _ 4 ^ NumberOfObjects - 1.! !
+	Width := k * 2 + 1.
+	NumberOfObjects := k * 2 + 1.
+	Goal := 4 ^ NumberOfObjects - 1.! !
 
 !Day11State class methodsFor: 'instance creation' stamp: 'shnarazk 5/27/2022 09:28:21'!
 newAs: aCode
 	| instance |
-	instance _ self new.
+	instance := self new.
 	instance initializeAs: aCode.
 	^ instance.! !
 
 !Day11State class methodsFor: 'instance creation' stamp: 'shnarazk 5/27/2022 09:41:59'!
 represents: vec
 	| code |
-	code _ vec inject: 0 into: [ :total :val | (total * 4) + val].
+	code := vec inject: 0 into: [ :total :val | (total * 4) + val].
 	^self newAs: code! !
 
 !Day11State class methodsFor: 'evaluating' stamp: 'shnarazk 5/28/2022 14:43:06'!
 part1
 	| start |
 	Day11State setKinds: 5.
-	start _ Day11State represents:
+	start := Day11State represents:
 		{0. 0. 0. 0. 1. 2. 1. 1. 1. 1}.
 	Transcript show: start cost.! !
 
@@ -434,19 +434,19 @@ part1
 part2
 	| start |
 	Day11State setKinds: 7.
-	start _ Day11State represents:
+	start := Day11State represents:
 		{0. 0. 0. 0. 1. 2. 1. 1. 1. 1. 0. 0. 0. 0. }.
 	Transcript show: start cost.! !
 
 !Day12Test methodsFor: 'testing' stamp: 'shnarazk 5/27/2022 22:36:17'!
 demoStart
- myComputer _ Day12 new.
+ myComputer := Day12 new.
 myComputer load: self example .
 myComputer start.! !
 
 !Day12Test methodsFor: 'testing' stamp: 'shnarazk 5/27/2022 22:34:32'!
 setUp
-	myComputer _ Day12 new.
+	myComputer := Day12 new.
 	myComputer load: self  example.! !
 
 !Day12Test methodsFor: 'accessing' stamp: 'shnarazk 5/27/2022 22:33:24'!
@@ -463,14 +463,14 @@ example
 !Day12Test class methodsFor: 'associating' stamp: 'shnarazk 5/27/2022 22:37:19'!
 demoStart
 | myComputer |
-	myComputer _ Day12 new.
+	myComputer := Day12 new.
 	myComputer load: self example.
 	myComputer start.! !
 
 !Day13 methodsFor: 'running' stamp: 'shnarazk 5/28/2022 21:18:40'!
 setUp
 	super setUp.
-	favorite _ 10.! !
+	favorite := 10.! !
 
 !Day13 methodsFor: 'evaluating' stamp: 'shnarazk 5/31/2022 05:28:20'!
 isGoal: aTuple
@@ -479,29 +479,29 @@ isGoal: aTuple
 !Day13 methodsFor: 'evaluating' stamp: 'shnarazk 5/31/2022 05:29:17'!
 isOpenSpace: aTuple
 	| x y val ones |
-	x _ (aTuple at: 3) x.
-	y _ (aTuple at: 3) y.
-	val _ x * x + (x * 3) + (x * y * 2) + y + (y * y).
-	val _ val + favorite.
-	ones _ 0.
+	x := (aTuple at: 3) x.
+	y := (aTuple at: 3) y.
+	val := x * x + (x * 3) + (x * y * 2) + y + (y * y).
+	val := val + favorite.
+	ones := 0.
 	[ val > 0 ] whileTrue: [
-		(val bitAnd: 1) > 0 ifTrue: [ ones _ ones + 1 ].
-		val _ val // 2 ].
+		(val bitAnd: 1) > 0 ifTrue: [ ones := ones + 1 ].
+		val := val // 2 ].
 	^ ones even.! !
 
 !Day13 methodsFor: 'evaluating' stamp: 'shnarazk 5/31/2022 05:44:35'!
 rechableSitesBy: aLimit
-	goal _ 1 @ 1.
-	cost _ Dictionary new.
+	goal := 1 @ 1.
+	cost := Dictionary new.
 	cost
 		at: goal
 		put: 0.
-	toEvaluate _ Heap sortBlock: [ :a :b |
+	toEvaluate := Heap sortBlock: [ :a :b |
 		(a at: 1) <= (b at: 1) ].
 	toEvaluate add:
 		{goal x + goal y. 0. 1@1}.
 	[ toEvaluate isEmpty ] whileFalse: [ | state |
-		state _ toEvaluate removeFirst.
+		state := toEvaluate removeFirst.
 		aLimit < (state at: 2) ifTrue: [ ^ (cost select: [ :val |
 				val isNil not and: [ val <= aLimit ]]) size ].
 		self registerNextStatesOf: state ].! !
@@ -509,15 +509,15 @@ rechableSitesBy: aLimit
 !Day13 methodsFor: 'evaluating' stamp: 'shnarazk 5/31/2022 05:37:14'!
 registerNextStatesOf: aState
 	| c x y xrange yrange |
-	c _ aState at: 2.
-	x _ (aState at: 3) x.
-	y _ (aState at: 3) y.
-	xrange _ x = 0
+	c := aState at: 2.
+	x := (aState at: 3) x.
+	y := (aState at: 3) y.
+	xrange := x = 0
 		ifTrue:
 			{0. 1}
 		ifFalse:
 			{x - 1. x. x + 1}.
-	yrange _ y = 0
+	yrange := y = 0
 		ifTrue:
 			{0. 1}
 		ifFalse:
@@ -528,9 +528,9 @@ registerNextStatesOf: aState
 		require: [ :p |
 			p x = x or: p y = y ]
 		on: [ :p | | newState xdist ydist |
-			xdist _ (goal x - p x) abs.
-			ydist _ (goal y - p y) abs.
-			newState _ {c + 1 + xdist + ydist. c + 1. p}.
+			xdist := (goal x - p x) abs.
+			ydist := (goal y - p y) abs.
+			newState := {c + 1 + xdist + ydist. c + 1. p}.
 			(cost includesKey: p) ifFalse: [
 				(self isOpenSpace: newState)
 					ifTrue: [
@@ -545,17 +545,17 @@ registerNextStatesOf: aState
 
 !Day13 methodsFor: 'evaluating' stamp: 'shnarazk 5/31/2022 05:41:16'!
 stepsTo: aGoal
-	goal _ aGoal.
-	cost _ Dictionary new.
+	goal := aGoal.
+	cost := Dictionary new.
 	cost
 		at: 1 @ 1
 		put: 0.
-	toEvaluate _ Heap sortBlock: [ :a :b |
+	toEvaluate := Heap sortBlock: [ :a :b |
 		(a at: 1) <= (b at: 1) ].
 	toEvaluate add:
 		{goal x + goal y. 0. 1@1}.
 	[ toEvaluate isEmpty ] whileFalse: [ | state |
-		state _ toEvaluate removeFirst.
+		state := toEvaluate removeFirst.
 		(self isGoal: state) ifTrue: [ "Transcript show: cost size."
 			^ state at: 2 ].
 		self registerNextStatesOf: state ].! !
@@ -566,7 +566,7 @@ favorite
 
 !Day13 methodsFor: 'accessing' stamp: 'shnarazk 5/28/2022 21:18:06'!
 favorite: aNumber
-	 favorite _ aNumber ! !
+	 favorite := aNumber ! !
 
 !Day13 methodsFor: 'accessing' stamp: 'shnarazk 5/31/2022 05:30:08'!
 rangeX: aRange andY: anotherRange require: filterBlock on: aBlock
@@ -609,21 +609,21 @@ testStepsTo
 !Day13 class methodsFor: 'instance creation' stamp: 'shnarazk 5/31/2022 05:26:38'!
 part1
 	| solver |
-	solver _ self new.
+	solver := self new.
 	solver favorite: 1364.
 	^ solver stepsTo: 31@39.! !
 
 !Day13 class methodsFor: 'instance creation' stamp: 'shnarazk 5/28/2022 23:36:36'!
 part2
 	| solver |
-	solver _ self new.
+	solver := self new.
 	solver favorite: 1364.
 	^ solver rechableSitesBy: 50.! !
 
 !Day16 methodsFor: 'testing' stamp: 'shnarazk 5/31/2022 12:20:45'!
 testExpand
-	notShrink _ true.
-	length _ 2.
+	notShrink := true.
+	length := 2.
 	self
 		assert:
 			(self expand:
@@ -636,7 +636,7 @@ testExpand
 				{false})
 		equals:
 			{false. false. true}.
-	length _ 6.
+	length := 6.
 	self
 		assert:
 			(self expand:
@@ -668,7 +668,7 @@ testShrink
 !Day16 methodsFor: 'initialization' stamp: 'shnarazk 5/31/2022 12:14:12'!
 initialize
 	super initialize.
-	notShrink _ false.! !
+	notShrink := false.! !
 
 !Day16 methodsFor: 'converting' stamp: 'shnarazk 5/31/2022 12:27:22'!
 fromString: aString
@@ -706,38 +706,38 @@ shrink: aVec
 	aVec size odd
 		ifTrue: [ ^ self toString: aVec ]
 		ifFalse: [ | tmp |
-			tmp _ ((1 to: aVec size) select: [ :i |
+			tmp := ((1 to: aVec size) select: [ :i |
 				i odd ]) collect: [ :i |
 				(aVec at: i) = (aVec at: i + 1) ].
 			^ self shrink: tmp ].! !
 
 !Day16 methodsFor: 'as yet unclassified' stamp: 'shnarazk 5/31/2022 12:25:25'!
 length: aNumber
-length _ aNumber ! !
+length := aNumber ! !
 
 !Day16 class methodsFor: 'as yet unclassified' stamp: 'shnarazk 5/31/2022 12:28:02'!
 example
 	| solver data |
-	solver _ self new.
+	solver := self new.
 	solver length: 20.
-	data _ solver fromString: '10000'.
+	data := solver fromString: '10000'.
 	^ solver  expand: data.! !
 
 !Day16 class methodsFor: 'as yet unclassified' stamp: 'shnarazk 5/31/2022 12:53:19'!
 part1
 	| solver data |
-	solver _ self new.
+	solver := self new.
 	solver length: 272.
-	data _ solver fromString: '10001110011110000'.
+	data := solver fromString: '10001110011110000'.
 	Transcript show: 'Given: ', (solver toString: data).
 	^ solver expand: data.! !
 
 !Day16 class methodsFor: 'as yet unclassified' stamp: 'shnarazk 5/31/2022 13:04:12'!
 part2
 	| solver data |
-	solver _ self new.
+	solver := self new.
 	solver length: 35651584.
-	data _ solver fromString: '10001110011110000'.
+	data := solver fromString: '10001110011110000'.
 	Transcript show: 'Given: ' , (solver toString: data).
 	^ solver expand: data.! !
 
@@ -751,7 +751,7 @@ location
 
 !Day17 methodsFor: 'accessing' stamp: 'shnarazk 6/3/2022 01:21:32'!
 location: aPoint
-	location _ aPoint ! !
+	location := aPoint ! !
 
 !Day17 methodsFor: 'accessing' stamp: 'shnarazk 6/4/2022 13:09:52'!
 path
@@ -759,7 +759,7 @@ path
 
 !Day17 methodsFor: 'accessing' stamp: 'shnarazk 6/4/2022 13:10:09'!
 path: aPath
-	path _ aPath! !
+	path := aPath! !
 
 !Day17 methodsFor: 'associating' stamp: 'shnarazk 6/4/2022 13:23:21'!
 neighbars: aBlock
@@ -767,10 +767,10 @@ neighbars: aBlock
 	4 @ 4 = location ifTrue: [
 		aBlock value: path.
 		^ {} ].
-	next _ self nextKey.
-	masks _ #(1 2 3 4 ) collect: [ :each |
+	next := self nextKey.
+	masks := #(1 2 3 4 ) collect: [ :each |
 		(next at: each) > $a ].
-	locations _ {0 @ -1. 0 @ 1. -1 @ 0. 1 @ 0} collect: [ :each |
+	locations := {0 @ -1. 0 @ 1. -1 @ 0. 1 @ 0} collect: [ :each |
 		location + each ].
 	^ (1 to: 4)
 		select: [ :each |
@@ -791,13 +791,13 @@ nextKey
 
 !Day17 methodsFor: 'initialization' stamp: 'shnarazk 6/4/2022 13:27:34'!
 initialize
-	location _ 1@1.
-	path _ ''! !
+	location := 1@1.
+	path := ''! !
 
 !Day17 class methodsFor: 'instance creation' stamp: 'shnarazk 6/4/2022 13:17:46'!
 newAt: aPoint from: aPath
 	| instance |
-	instance _ self new.
+	instance := self new.
 	instance
 		location: aPoint;
 		path: aPath.
@@ -807,12 +807,12 @@ newAt: aPoint from: aPath
 initialize
 	super initialize.
 	self setHasher.
-	Visit _ Dictionary new.
-	ToVisit _ Heap new.! !
+	Visit := Dictionary new.
+	ToVisit := Heap new.! !
 
 !Day17 class methodsFor: 'initialization' stamp: 'shnarazk 6/2/2022 20:06:26'!
 setHasher
-Hasher _ RustCaller1 new.! !
+Hasher := RustCaller1 new.! !
 
 !Day17 class methodsFor: 'accessing' stamp: 'shnarazk 6/3/2022 16:59:17'!
 foundGoal
@@ -820,7 +820,7 @@ foundGoal
 
 !Day17 class methodsFor: 'accessing' stamp: 'shnarazk 6/3/2022 17:00:02'!
 foundGoal: aNumber
-	FoundGoal _ aNumber .! !
+	FoundGoal := aNumber .! !
 
 !Day17 class methodsFor: 'accessing' stamp: 'shnarazk 6/2/2022 20:05:23'!
 hasher
@@ -828,7 +828,7 @@ hasher
 
 !Day17 class methodsFor: 'accessing' stamp: 'shnarazk 6/2/2022 20:05:44'!
 hasher: aHasher
-	Hasher _ aHasher ! !
+	Hasher := aHasher ! !
 
 !Day17 class methodsFor: 'accessing' stamp: 'shnarazk 6/4/2022 13:11:51'!
 input
@@ -837,39 +837,39 @@ input
 !Day17 class methodsFor: 'methods' stamp: 'shnarazk 6/3/2022 20:02:55'!
 example
 	self initialize.
-	"Input _ 'hijkl'."
-	"Input _ 'ihgpwlah'."
-	Input _ 'kglvqrro'.
+	"Input := 'hijkl'."
+	"Input := 'ihgpwlah'."
+	Input := 'kglvqrro'.
 	^ self solve.! !
 
 !Day17 class methodsFor: 'methods' stamp: 'shnarazk 6/3/2022 20:07:44'!
 part1
 	self initialize.
-	Input _ 'gdjjyniy'.
+	Input := 'gdjjyniy'.
 	^ self solve.! !
 
 !Day17 class methodsFor: 'methods' stamp: 'shnarazk 6/4/2022 15:06:24'!
 part2
 	self initialize.
-	Input _ 'gdjjyniy' "'ihgpwlah'".
+	Input := 'gdjjyniy' "'ihgpwlah'".
 	^ self solve2.! !
 
 !Day17 class methodsFor: 'methods' stamp: 'shnarazk 6/4/2022 13:24:37'!
 solve
 	| start stage |
-	FoundGoal _ nil.
-	start _ self new.
+	FoundGoal := nil.
+	start := self new.
 	start location: 1 @ 1.
-	stage _ Set new.
+	stage := Set new.
 	stage add: start.
 	[ FoundGoal isNil & stage isEmpty not ] whileTrue: [
 		Transcript show: stage.
-		stage _ stage
+		stage := stage
 			inject: Set new
 			into: [ :aSet :each |
 				Transcript show: each path.
 				(each neighbars: [ :path |
-					FoundGoal _ path ]) do: [ :next |
+					FoundGoal := path ]) do: [ :next |
 					aSet add: next ].
 				aSet ]].
 	^ FoundGoal.! !
@@ -877,19 +877,19 @@ solve
 !Day17 class methodsFor: 'methods' stamp: 'shnarazk 6/4/2022 15:01:27'!
 solve2
 	| start stage |
-	FoundGoal _ 0.
-	start _ self new.
+	FoundGoal := 0.
+	start := self new.
 	start location: 1 @ 1.
-	stage _ Set new.
+	stage := Set new.
 	stage add: start.
 	[ stage isEmpty not ] whileTrue: [
 		"Transcript show: FoundGoal asString."
-		stage _ stage
+		stage := stage
 			inject: Set new
 			into: [ :aSet :each |
 				"Transcript show: each key."
 				(each neighbars: [ :path |
-					FoundGoal _ FoundGoal max: path size ]) do: [ :next |
+					FoundGoal := FoundGoal max: path size ]) do: [ :next |
 					aSet add: next ].
 				aSet ]].
 	^ FoundGoal.! !
@@ -897,45 +897,45 @@ solve2
 !Day12 methodsFor: 'evaluating' stamp: 'shnarazk 5/27/2022 23:20:17'!
 execute: anInstruction
 	| opCode |
-	opCode _ anInstruction at: 1.
+	opCode := anInstruction at: 1.
 	"Transcript show: opCode."
 	opCode = #cpy ifTrue: [ | from to val |
-		from _ anInstruction at: 2.
-		to _ anInstruction at: 3.
-		val _ from isNumber
+		from := anInstruction at: 2.
+		to := anInstruction at: 3.
+		val := from isNumber
 			ifTrue: [ from ]
 			ifFalse: [ register at: from ].
 		register
 			at: to
 			put: val.
-		pc _ pc + 1.
+		pc := pc + 1.
 		^ self ].
 	opCode = #inc ifTrue: [ | name val |
-		name _ anInstruction at: 2.
-		val _ register at: name.
+		name := anInstruction at: 2.
+		val := register at: name.
 		register
 			at: name
 			put: val + 1.
-		pc _ pc + 1.
+		pc := pc + 1.
 		^ self ].
 	opCode = #dec ifTrue: [ | name val |
-		name _ anInstruction at: 2.
-		val _ register at: name.
+		name := anInstruction at: 2.
+		val := register at: name.
 		register
 			at: name
 			put: val - 1.
-		pc _ pc + 1.
+		pc := pc + 1.
 		^ self ].
 	opCode = #jnz ifTrue: [ | op1 cond op2 offset |
-		op1 _ anInstruction at: 2.
-		cond _ op1 isNumber
+		op1 := anInstruction at: 2.
+		cond := op1 isNumber
 			ifTrue: [ op1 ]
 			ifFalse: [ register at: op1 ].
-		op2 _ anInstruction at: 3.
-		offset _ op2 isNumber
+		op2 := anInstruction at: 3.
+		offset := op2 isNumber
 			ifTrue: [ op2 ]
 			ifFalse: [ register at: op2 ].
-		pc _ pc +
+		pc := pc +
 			(cond = 0
 				ifTrue: [ 1 ]
 				ifFalse: [ offset ]).
@@ -944,11 +944,11 @@ execute: anInstruction
 !Day12 methodsFor: 'evaluating' stamp: 'shnarazk 5/27/2022 23:02:07'!
 start
 	| end |
-	pc _ 1.
-	end _ code size.
+	pc := 1.
+	end := code size.
 	[ end < pc ] whileFalse: [ | instruction oldPc |
-		oldPc _ pc.
-		instruction _ code at: pc.
+		oldPc := pc.
+		instruction := code at: pc.
 		"Transcript show: instruction asString."
 		self execute: instruction.
 		oldPc = pc ifTrue: [ self error: 'Not updated PC' ]].
@@ -956,14 +956,14 @@ start
 
 !Day12 methodsFor: 'initialization' stamp: 'shnarazk 5/27/2022 22:41:19'!
 initialize
-pc _ 1.
-register _ Dictionary new.
+pc := 1.
+register := Dictionary new.
 register at: #a put: 0; at: #b put: 0; at: #c put: 0; at: #d put: 0.! !
 
 !Day12 methodsFor: 'initialization' stamp: 'shnarazk 5/27/2022 22:18:30'!
 load: aProgram
-	code _ aProgram.
-	pc _ 1.! !
+	code := aProgram.
+	pc := 1.! !
 
 !Day12 methodsFor: 'as yet unclassified' stamp: 'shnarazk 5/27/2022 23:22:55'!
 at: reg put: val
@@ -972,7 +972,7 @@ register at: reg put: val! !
 !Day12 class methodsFor: 'initialization' stamp: 'shnarazk 5/27/2022 23:18:53'!
 part1
 	| code myComputer |
-	code _ {
+	code := {
 	{#cpy . 1 . #a} .
       {#cpy . 1 . #b} .
       {#cpy . 26 . #d} .
@@ -998,14 +998,14 @@ part1
   {#jnz . #c . -5} 
 	
 	}.
-	myComputer _ self new.
+	myComputer := self new.
 	myComputer load: code.
 	myComputer start.! !
 
 !Day12 class methodsFor: 'initialization' stamp: 'shnarazk 5/27/2022 23:23:22'!
 part2
 	| code myComputer |
-	code _ {
+	code := {
 		{#cpy. 1. #a}. 
 		{#cpy. 1. #b}. 
 		{#cpy. 26. #d}. 
@@ -1030,7 +1030,7 @@ part2
 		{#dec. #c}. 
 		{#jnz. #c. -5}
 	}.
-	myComputer _ self new.
+	myComputer := self new.
 	myComputer load: code.
 	myComputer at: #c put: 1.
 	myComputer start.! !

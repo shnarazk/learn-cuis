@@ -456,7 +456,7 @@ initialize
 finalizeAndReset
 	"Note: the callee accepts only alphanumeric characters."
 	| key |
-	key _ B128 new.
+	key := B128 new.
 	self finalizeAndResetMD5: key.
 	^ '' join:
 		(key getHandle asArray collect: [ :each |
@@ -466,10 +466,10 @@ finalizeAndReset
 hash: aString
 	"Note: the callee accepts only alphanumeric characters."
 	| input |
-	input _ aString .
+	input := aString .
 	[ 32 < input size ] whileTrue: [
 		self pushInputSegment: ( input copyFrom: 1 to: 32).
-		input  _ input copyFrom: 33 to: input size.
+		input := input copyFrom: 33 to: input size.
 	].
 	self pushInputSegment: input, '----------_----------_----------' .
 	^ self finalizeAndReset.
@@ -479,8 +479,8 @@ hash: aString
 hashString32: aString
 	"Note: the callee accepts only alphanumeric characters."
 	| key val |
-	val _ aString , '---------------------------------'.
-	key _ B128 new.
+	val := aString , '---------------------------------'.
+	key := B128 new.
 	key b0: (val at: 1) asciiValue.
 	key b1: (val at: 2) asciiValue.
 	key b2: (val at: 3) asciiValue.
@@ -523,7 +523,7 @@ pushInputSegment: val
 	"Note: the callee accepts only alphanumeric characters."
 	| key |
 	val size < 32 ifTrue: [ self error: 'Invalid argument' ].
-	key _ B128 new.
+	key := B128 new.
 	key b0: (val at: 1) asciiValue.
 	key b1: (val at: 2) asciiValue.
 	key b2: (val at: 3) asciiValue.
@@ -574,7 +574,7 @@ test2: aString
 !RustCaller1 methodsFor: 'testing' stamp: 'shnarazk 6/2/2022 01:55:18'!
 testMd5
 	| key |
-	key _ B128 new.
+	key := B128 new.
 	key b0: $a asciiValue.
 	key b1: $b asciiValue.
 	key b2: $c asciiValue.
